@@ -3,1042 +3,667 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaSim 3D Pro</title>
-
-<script type="importmap">
-{
- "imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
- }
-}
-</script>
 
 <style>
 *{box-sizing:border-box}
-
 body{
- margin:0;
- background:#ffffff;
- color:#303b45;
- font-family:Arial,Helvetica,sans-serif;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#060d18;
+  color:#e5f3fa;
 }
-
 header{
- background:#fff;
- border-bottom:1px solid #e4e8ec;
- padding:17px 24px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:12px;
- flex-wrap:wrap;
+  padding:20px;
+  background:#0b172a;
+  border-bottom:1px solid #16445a;
 }
-
-.brand{
- display:flex;
- align-items:center;
- gap:12px;
-}
-
-.logo{
- background:#eaf0f5;
- color:#45647e;
- width:43px;
- height:43px;
- border-radius:9px;
- display:grid;
- place-items:center;
- font-size:23px;
-}
-
-.brand h1{
- font-size:20px;
- margin:0;
- color:#30485c;
-}
-
-.brand small{
- color:#8a969f;
- font-size:11px;
-}
-
-.header-status{
- font-size:12px;
- color:#627487;
- background:#f4f6f8;
- padding:9px 12px;
- border-radius:6px;
-}
-
+header h1{margin:0;color:#35d5ee}
+header p{margin:7px 0 0;color:#a9c5d5}
 main{
- max-width:1500px;
- padding:22px;
- margin:auto;
+  max-width:1250px;
+  margin:auto;
+  padding:18px;
 }
-
-.intro h2{
- font-size:23px;
- margin:0 0 8px;
- color:#30485c;
-}
-
-.intro p{
- color:#7b8791;
- font-size:14px;
- line-height:1.6;
- max-width:850px;
-}
-
-.layout{
- display:grid;
- grid-template-columns:minmax(0,1fr) 300px;
- gap:15px;
- margin-top:20px;
-}
-
 .panel{
- background:#fff;
- border:1px solid #e0e5e9;
- border-radius:9px;
- padding:15px;
- box-shadow:0 2px 7px #00000008;
- min-width:0;
+  background:#102638;
+  border:1px solid #1c4a60;
+  border-radius:13px;
+  padding:16px;
+  margin-bottom:16px;
 }
-
-.viewer{
- padding:0;
- overflow:hidden;
+h2{color:#38bdf8;margin-top:0}
+#visor{
+  width:100%;
+  height:480px;
+  min-height:350px;
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+  background:#071522;
+  border:1px solid #246078;
 }
-
-.viewer-head{
- padding:14px 16px;
- display:flex;
- justify-content:space-between;
- gap:10px;
- align-items:center;
- border-bottom:1px solid #e7ebee;
+#visor canvas{
+  display:block;
+  width:100%;
+  height:100%;
 }
-
-.viewer-head strong{
- font-size:13px;
- color:#41596d;
+#mensaje{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  color:#a9c5d5;
+  pointer-events:none;
 }
-
-.viewer-head small{
- color:#8996a0;
-}
-
-#scene{
- display:block;
- width:100%;
- height:510px;
- background:#edf1f4;
- touch-action:none;
-}
-
-.controls{
- padding:12px;
- border-top:1px solid #e6eaed;
- display:flex;
- flex-wrap:wrap;
- gap:8px;
-}
-
 button{
- border:1px solid #d7dfe5;
- background:#fff;
- color:#40566a;
- padding:10px 13px;
- border-radius:6px;
- font-size:12px;
- font-weight:600;
- cursor:pointer;
+  background:#087f8c;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:11px 16px;
+  margin:5px 5px 5px 0;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-button:hover{
- background:#f0f4f7;
+button:hover{background:#00a896}
+button.secundario{background:#16445a}
+button.activo{background:#00a896}
+.controles{display:flex;flex-wrap:wrap;gap:5px}
+.estaciones{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;
 }
-
-button.active{
- background:#e6eef4;
- border-color:#8ba4b8;
+.estacion{
+  background:#0b1c2b;
+  border:1px solid #20516a;
+  border-radius:10px;
+  padding:13px;
+  cursor:pointer;
 }
-
-button:focus-visible{
- outline:2px solid #658da9;
- outline-offset:2px;
+.estacion:hover,.estacion.seleccionada{
+  border-color:#35d5ee;
+  background:#12354a;
 }
-
-.side-title{
- font-size:15px;
- color:#40566a;
- margin:0 0 12px;
+.estacion h3{color:#35d5ee;margin:0 0 8px}
+.estacion p{color:#b8d0dd;font-size:14px;margin:0}
+.indicadores{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:12px;
 }
-
-.station-list{
- display:grid;
- gap:7px;
+.indicador{
+  background:#0b1c2b;
+  border-radius:9px;
+  padding:14px;
+  border:1px solid #20516a;
 }
-
-.station-button{
- width:100%;
- text-align:left;
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:11px;
+.indicador strong{
+  display:block;
+  color:#35d5ee;
+  font-size:23px;
+  margin-top:7px;
 }
-
-.station-button small{
- color:#8b99a3;
-}
-
-.info{
- margin-top:14px;
- padding:13px;
- background:#f6f8f9;
- border-radius:7px;
-}
-
-.info h3{
- margin:0 0 9px;
- color:#42637d;
- font-size:15px;
-}
-
-.info p{
- font-size:12px;
- color:#71808c;
- line-height:1.6;
-}
-
-.info b{
- color:#425b70;
-}
-
-.progress-box{
- margin-top:14px;
- padding:12px;
- border:1px solid #e2e8ec;
- border-radius:7px;
-}
-
-.progress-track{
- height:8px;
- background:#e9edf0;
- border-radius:20px;
- overflow:hidden;
- margin-top:9px;
-}
-
-.progress-fill{
- height:100%;
- width:0%;
- background:#789eb2;
- transition:width .3s;
-}
-
-.metrics{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:12px;
- margin-top:16px;
-}
-
-.metric{
- padding:15px;
- border:1px solid #e2e7eb;
- border-radius:8px;
- background:white;
-}
-
-.metric small{
- color:#89959f;
- font-size:11px;
-}
-
-.metric strong{
- display:block;
- margin:9px 0 5px;
- font-size:23px;
- color:#42647f;
-}
-
-.metric span{
- font-size:11px;
- color:#9aa5ad;
-}
-
-.lower{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:14px;
- margin-top:15px;
-}
-
-input[type=range]{
- width:100%;
- accent-color:#63869f;
- margin-top:15px;
-}
-
-.formula{
- background:#f5f7f9;
- padding:13px;
- border-radius:7px;
- color:#4c6375;
- font-family:monospace;
- line-height:1.9;
- font-size:13px;
- overflow-wrap:anywhere;
-}
-
-#stageStatus{
- color:#657f93;
- font-size:12px;
-}
-
-footer{
- text-align:center;
- padding:25px;
- color:#9aa5ad;
- font-size:11px;
-}
-
-@media(max-width:850px){
- .layout{grid-template-columns:1fr}
- .metrics{grid-template-columns:repeat(2,1fr)}
-}
-
+label{display:block;margin:12px 0 6px;color:#b8d0dd}
+input[type=range]{width:100%;accent-color:#00a896}
+small{color:#9db9c9}
+footer{text-align:center;padding:20px;color:#7897a9}
 @media(max-width:600px){
- main{padding:12px}
- header{padding:13px}
- #scene{height:390px}
- .lower{grid-template-columns:1fr}
- .intro h2{font-size:20px}
- .metric strong{font-size:20px}
+  #visor{height:390px}
+  header h1{font-size:22px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
- <div class="brand">
-  <div class="logo">♧</div>
-  <div>
-   <h1>AquaSim 3D Pro</h1>
-   <small>SIMULADOR DE INGENIERÍA AMBIENTAL</small>
-  </div>
- </div>
- <div class="header-status">Sistema de tratamiento de agua</div>
+  <h1>AquaSim 3D Pro</h1>
+  <p>Simulador interactivo del tratamiento y reúso de aguas residuales</p>
 </header>
 
 <main>
+  <section class="panel">
+    <h2>Visualización tridimensional de la PTAR</h2>
+    <div id="visor">
+      <div id="mensaje">Cargando visualización 3D...</div>
+    </div>
+    <div class="controles">
+      <button id="iniciar">▶ Iniciar tratamiento</button>
+      <button id="pausar" class="secundario">Ⅱ Pausar</button>
+      <button id="reiniciar" class="secundario">↻ Reiniciar</button>
+      <button id="vista" class="secundario">Vista general</button>
+    </div>
+    <label for="avance">Progreso del tratamiento</label>
+    <input id="avance" type="range" min="0" max="100" value="0">
+    <small>Arrastra el control para observar cómo cambia el agua durante el proceso.</small>
+  </section>
 
-<section class="intro">
- <h2>Tratamiento y Reúso de Aguas Residuales</h2>
- <p>
- Visualiza el recorrido del agua residual a través de una planta
- de tratamiento tridimensional. Observa sus transformaciones
- físicas y los indicadores didácticos de cada etapa.
- </p>
-</section>
+  <section class="panel">
+    <h2>Etapas del tratamiento</h2>
+    <div class="estaciones" id="listaEstaciones">
+      <div class="estacion seleccionada" data-stage="0">
+        <h3>1. Pretratamiento</h3>
+        <p>Retención de residuos sólidos y materiales de gran tamaño.</p>
+      </div>
+      <div class="estacion" data-stage="1">
+        <h3>2. Sedimentación</h3>
+        <p>Separación de partículas suspendidas mediante gravedad.</p>
+      </div>
+      <div class="estacion" data-stage="2">
+        <h3>3. Tratamiento biológico</h3>
+        <p>Acción de microorganismos y aireación del agua.</p>
+      </div>
+      <div class="estacion" data-stage="3">
+        <h3>4. Filtración y desinfección</h3>
+        <p>Retención de partículas pequeñas y desinfección con luz UV.</p>
+      </div>
+    </div>
+  </section>
 
-<section class="layout">
-
- <div class="panel viewer">
-
-  <div class="viewer-head">
-   <strong>VISUALIZACIÓN TRIDIMENSIONAL DE LA PTAR</strong>
-   <small id="stageStatus">Vista general</small>
-  </div>
-
-  <canvas id="scene"></canvas>
-
-  <div class="controls">
-   <button id="playBtn" class="active">▶ Iniciar recorrido</button>
-   <button id="pauseBtn">Ⅱ Pausar</button>
-   <button id="resetBtn">↺ Reiniciar</button>
-   <button id="viewBtn">Vista general</button>
-  </div>
-
- </div>
-
- <aside class="panel">
-
-  <h3 class="side-title">Etapas de tratamiento</h3>
-
-  <div class="station-list" id="stationList"></div>
-
-  <div class="info">
-   <h3 id="stationTitle">Pretratamiento</h3>
-   <p id="description">
-    Separación de residuos sólidos de mayor tamaño.
-   </p>
-   <p>
-    <b>Objetivo:</b>
-    <span id="objective">Retener residuos grandes.</span>
-   </p>
-   <p>
-    <b>Proceso:</b>
-    <span id="process">Separación física.</span>
-   </p>
-  </div>
-
-  <div class="progress-box">
-   <small>AVANCE DEL TRATAMIENTO</small>
-   <div class="progress-track">
-    <div class="progress-fill" id="progressFill"></div>
-   </div>
-   <p id="progressText" style="font-size:12px;color:#71808c">
-    0% completado
-   </p>
-  </div>
-
- </aside>
-</section>
-
-<section class="metrics">
-
- <div class="metric">
-  <small>CAUDAL DE ENTRADA</small>
-  <strong id="flowValue">50</strong>
-  <span>m³/h</span>
- </div>
-
- <div class="metric">
-  <small>pH SIMULADO</small>
-  <strong id="phValue">6.50</strong>
-  <span>Unidades de pH</span>
- </div>
-
- <div class="metric">
-  <small>TURBIDEZ SIMULADA</small>
-  <strong id="turbidityValue">120</strong>
-  <span>NTU</span>
- </div>
-
- <div class="metric">
-  <small>EFICIENCIA ESTIMADA</small>
-  <strong id="efficiencyValue">0%</strong>
-  <span>Remoción ilustrativa</span>
- </div>
-
-</section>
-
-<section class="lower">
-
- <div class="panel">
-  <h3 class="side-title">Control de caudal</h3>
-  <label>
-   Caudal:
-   <b id="flowLabel">50 m³/h</b>
-  </label>
-  <input type="range" id="flowSlider"
-   min="10" max="100" value="50" step="5">
-  <p style="font-size:12px;color:#89959f">
-   Ajusta el caudal de entrada de la simulación.
-  </p>
- </div>
-
- <div class="panel">
-  <h3 class="side-title">Modelo matemático</h3>
-  <div class="formula">
-   E = ((Ci - Cf) / Ci) × 100
-   <br>
-   Ci = Concentración inicial
-   <br>
-   Cf = Concentración final
-   <br>
-   E = Eficiencia de remoción
-  </div>
- </div>
-
-</section>
-
-<footer>
- AquaSim 3D Pro · Proyecto académico de investigación
- <br>
- Tratamiento y Reúso de Aguas Residuales
-</footer>
-
+  <section class="panel">
+    <h2>Indicadores del agua</h2>
+    <div class="indicadores">
+      <div class="indicador">pH<strong id="ph">6.2</strong></div>
+      <div class="indicador">Turbidez<strong id="turbidez">180 NTU</strong></div>
+      <div class="indicador">Tratamiento<strong id="eficiencia">0%</strong></div>
+      <div class="indicador">Estado<strong id="estado">Inicial</strong></div>
+    </div>
+    <label for="caudal">Caudal de entrada (L/s)</label>
+    <input id="caudal" type="range" min="5" max="100" value="40">
+    <small>Caudal seleccionado: <span id="valorCaudal">40</span> L/s</small>
+  </section>
+  <footer>AquaSim 3D Pro · Modelo educativo de tratamiento de aguas residuales</footer>
 </main>
 
-<script type="module">
+<!-- Three.js clásico: evita problemas con importmap y módulos -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.128.0/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-import * as THREE from "three";
-import {OrbitControls} from
- "three/addons/controls/OrbitControls.js";
+<script>
+(function(){
+"use strict";
 
-/* =====================================
-   1. ESCENA Y CÁMARA
-===================================== */
+const visor=document.getElementById("visor");
+const mensaje=document.getElementById("mensaje");
 
-const canvas=document.getElementById("scene");
-
-const renderer=new THREE.WebGLRenderer({
- canvas,
- antialias:true
-});
-
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.1;
-
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xeaf0f3);
-scene.fog=new THREE.Fog(0xeaf0f3,40,85);
-
-const camera=new THREE.PerspectiveCamera(43,1,.1,150);
-camera.position.set(21,17,26);
-
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;
-controls.dampingFactor=.06;
-controls.minDistance=10;
-controls.maxDistance=60;
-controls.maxPolarAngle=Math.PI/2.05;
-controls.target.set(0,1,0);
-
-scene.add(new THREE.HemisphereLight(0xffffff,0x87949a,2));
-
-const sun=new THREE.DirectionalLight(0xffffff,3);
-sun.position.set(12,25,15);
-sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);
-scene.add(sun);
-
-const fill=new THREE.DirectionalLight(0xffffff,.8);
-fill.position.set(-15,10,-10);
-scene.add(fill);
-
-/* =====================================
-   2. MATERIALES
-===================================== */
-
-const concrete=new THREE.MeshStandardMaterial({
- color:0xaeb8bf,roughness:.92
-});
-
-const darkConcrete=new THREE.MeshStandardMaterial({
- color:0x71808b,roughness:.85
-});
-
-const metal=new THREE.MeshStandardMaterial({
- color:0x8195a1,metalness:.7,roughness:.35
-});
-
-const floorMat=new THREE.MeshStandardMaterial({
- color:0xd5dce0,roughness:.95
-});
-
-const dirtyWater=new THREE.MeshStandardMaterial({
- color:0x514b3c,
- roughness:.2,
- metalness:.05,
- transparent:true,
- opacity:.94
-});
-
-const waterColors=[
- 0x514b3c,
- 0x82774d,
- 0x718d79,
- 0x619a9d,
- 0x76b4c2,
- 0xa6dbe6
-];
-
-const waterMaterials=waterColors.map(color=>
- new THREE.MeshStandardMaterial({
-  color,
-  roughness:.18,
-  metalness:.08,
-  transparent:true,
-  opacity:.91
- })
-);
-
-const pipeMat=new THREE.MeshStandardMaterial({
- color:0x607d91,
- metalness:.65,
- roughness:.3
-});
-
-const plant=new THREE.Group();
-scene.add(plant);
-
-/* =====================================
-   3. FUNCIONES DE CONSTRUCCIÓN
-===================================== */
-
-function box(parent,x,y,z,w,h,d,material){
- const mesh=new THREE.Mesh(
-  new THREE.BoxGeometry(w,h,d),material
- );
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- parent.add(mesh);
- return mesh;
+if(!window.THREE){
+  mensaje.innerHTML="No se pudo cargar Three.js.<br>Comprueba tu conexión a internet y vuelve a abrir el archivo.";
+  return;
 }
 
-function cylinder(parent,x,y,z,r,h,material){
- const mesh=new THREE.Mesh(
-  new THREE.CylinderGeometry(r,r,h,40),material
- );
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- parent.add(mesh);
- return mesh;
-}
-
-function pipe(parent,x1,x2,y,z,r=.13){
- const mesh=new THREE.Mesh(
-  new THREE.CylinderGeometry(r,r,Math.abs(x2-x1),20),
-  pipeMat
- );
- mesh.rotation.z=Math.PI/2;
- mesh.position.set((x1+x2)/2,y,z);
- parent.add(mesh);
- return mesh;
-}
-
-/* =====================================
-   4. TERRENO
-===================================== */
-
-box(plant,0,-.35,0,48,.5,18,floorMat);
-
-const grid=new THREE.GridHelper(48,48,0xa5b2bb,0xc5ced3);
-grid.position.y=-.09;
-plant.add(grid);
-
-/* =====================================
-   5. TANQUES
-===================================== */
-
-const tankGroups=[];
-const waterSurfaces=[];
-
-function createTank(x,index){
-
- const group=new THREE.Group();
- group.position.set(x,0,0);
- plant.add(group);
-
- const w=4.1;
- const d=5;
-
- // Paredes
- box(group,0,.9,-d/2,w,1.8,.22,concrete);
- box(group,0,.9,d/2,w,1.8,.22,concrete);
- box(group,-w/2,.9,0,.22,1.8,d,concrete);
- box(group,w/2,.9,0,.22,1.8,d,concrete);
-
- // Fondo
- box(group,0,-.05,0,w,.18,d,darkConcrete);
-
- // Agua de cada etapa
- const surface=box(
-  group,0,.43,0,w-.42,.13,d-.42,
-  waterMaterials[index]
- );
-
- waterSurfaces.push(surface);
-
- // Bordes
- box(group,0,1.84,-d/2,w+.15,.13,.2,darkConcrete);
- box(group,0,1.84,d/2,w+.15,.13,.2,darkConcrete);
- box(group,-w/2,1.84,0,.2,.13,d,darkConcrete);
- box(group,w/2,1.84,0,.2,.13,d,darkConcrete);
-
- // Pasarela
- box(group,0,2.02,0,w+.25,.12,.38,metal);
-
- // Barandas
- for(let z of [-.23,.23]){
-  box(group,0,2.36,z,w+.2,.06,.06,metal);
- }
-
- for(let xx=-2;xx<=2;xx+=1){
-  box(group,xx,2.2,-.23,.055,.36,.055,metal);
-  box(group,xx,2.2,.23,.055,.36,.055,metal);
- }
-
- tankGroups.push(group);
- return group;
-}
-
-const xs=[-15,-9,-3,3,9,15];
-
-for(let i=0;i<6;i++){
- createTank(xs[i],i);
-}
-
-/* =====================================
-   6. PRETRATAMIENTO
-===================================== */
-
-const screenGroup=new THREE.Group();
-screenGroup.position.set(-15,0,0);
-plant.add(screenGroup);
-
-for(let i=-6;i<=6;i++){
- const bar=box(
-  screenGroup,i*.22,1.0,-1.4,
-  .055,1.3,.07,metal
- );
- bar.rotation.z=-.22;
-}
-
-box(plant,-19,.5,0,3,1,2.2,concrete);
-
-/* =====================================
-   7. SEDIMENTADOR CIRCULAR
-===================================== */
-
-const clarifier=new THREE.Group();
-clarifier.position.set(-9,1.95,0);
-plant.add(clarifier);
-
-cylinder(clarifier,0,0,0,1.5,.15,darkConcrete);
-cylinder(clarifier,0,.1,0,1.3,.07,waterMaterials[1]);
-
-cylinder(clarifier,0,.55,0,.15,1,metal);
-
-const scraper=box(
- clarifier,0,.72,0,2.7,.07,.12,metal
-);
-
-/* =====================================
-   8. AIREACIÓN BIOLÓGICA
-===================================== */
-
-const airSystem=new THREE.Group();
-airSystem.position.set(-3,0,0);
-plant.add(airSystem);
-
-pipe(airSystem,-1.8,1.8,2.1,0,.09);
-
-for(let i=-3;i<=3;i++){
- cylinder(airSystem,i*.4,.54,0,.1,.08,metal);
-}
-
-/* =====================================
-   9. FILTRACIÓN
-===================================== */
-
-const sand=new THREE.MeshStandardMaterial({color:0xa28c6e});
-const gravel=new THREE.MeshStandardMaterial({color:0x6c777e});
-const carbon=new THREE.MeshStandardMaterial({color:0x444b4f});
-
-for(let i=0;i<3;i++){
- box(
-  plant,1.7+i*1.3,1.15,-.2,
-  .75,.5,2,
-  [sand,gravel,carbon][i]
- );
-}
-
-/* =====================================
-   10. DESINFECCIÓN
-===================================== */
-
-for(let i=0;i<4;i++){
- box(
-  plant,7.7+i*.85,1.65,0,
-  .09,.1,3,
-  metal
- );
-}
-
-/* =====================================
-   11. DEPÓSITO DE REÚSO
-===================================== */
-
-cylinder(plant,15,2.4,-3,1.3,4.6,concrete);
-
-cylinder(plant,15,2.4,-3,1.17,4.45,waterMaterials[5]);
-
-cylinder(plant,15,4.75,-3,1.4,.2,metal);
-
-/* =====================================
-   12. TUBERÍAS
-===================================== */
-
-pipe(plant,-21,-17,.7,0,.19);
-
-for(let i=0;i<5;i++){
- pipe(plant,xs[i]+2,xs[i+1]-2,.75,0,.14);
-}
-
-// Salida
-pipe(plant,17,20,.75,0,.16);
-
-// Válvulas
-for(let i=0;i<5;i++){
- const valve=cylinder(
-  plant,-12+i*6,.75,0,.2,.16,metal
- );
- valve.rotation.x=Math.PI/2;
-}
-
-/* =====================================
-   13. ETIQUETAS
-===================================== */
-
-const labels=[
- "PRETRATAMIENTO",
- "SEDIMENTACION",
- "BIOLOGICO",
- "FILTRACION",
- "DESINFECCION",
- "REUSO"
-];
-
-function makeLabel(text,x){
- const c=document.createElement("canvas");
- c.width=512;
- c.height=100;
-
- const ctx=c.getContext("2d");
- ctx.fillStyle="#ffffff";
- ctx.fillRect(0,0,512,100);
- ctx.strokeStyle="#8499a9";
- ctx.lineWidth=4;
- ctx.strokeRect(2,2,508,96);
- ctx.fillStyle="#344e62";
- ctx.font="bold 32px Arial";
- ctx.textAlign="center";
- ctx.fillText(text,256,63);
-
- const texture=new THREE.CanvasTexture(c);
- texture.colorSpace=THREE.SRGBColorSpace;
-
- const mesh=new THREE.Mesh(
-  new THREE.PlaneGeometry(4.2,.82),
-  new THREE.MeshBasicMaterial({
-   map:texture,
-   side:THREE.DoubleSide
-  })
- );
-
- mesh.position.set(x,3.05,-3.4);
- plant.add(mesh);
-}
-
-for(let i=0;i<6;i++){
- makeLabel(labels[i],xs[i]);
-}
-
-/* =====================================
-   14. PARTICULAS DEL AGUA
-===================================== */
-
-// Partículas individuales que recorren la planta.
-const particles=[];
-
-const particleGeometry=new THREE.SphereGeometry(.075,10,10);
-
-for(let i=0;i<65;i++){
-
- const mat=new THREE.MeshStandardMaterial({
-  color:0x514b3c,
-  roughness:.25
- });
-
- const p=new THREE.Mesh(particleGeometry,mat);
-
- p.position.set(
-  -20+Math.random()*40,
-  .82+Math.random()*.15,
-  (Math.random()-.5)*1.1
- );
-
- plant.add(p);
-
- particles.push(p);
-}
-
-/* =====================================
-   15. BURBUJAS DE AIRE
-===================================== */
-
-const bubbles=[];
-
-const bubbleMaterial=new THREE.MeshBasicMaterial({
- color:0xe3f4f6,
- transparent:true,
- opacity:.75
-});
-
-for(let i=0;i<30;i++){
-
- const bubble=new THREE.Mesh(
-  new THREE.SphereGeometry(.055,10,10),
-  bubbleMaterial
- );
-
- bubble.position.set(
-  -4+Math.random()*2,
-  .7+Math.random(),
-  -1+Math.random()*2
- );
-
- plant.add(bubble);
- bubbles.push(bubble);
-}
-
-/* =====================================
-   16. DATOS DE LAS ETAPAS
-===================================== */
-
-const stages=[
- {
-  name:"Pretratamiento",
-  description:"El agua residual entra a la planta y atraviesa rejas que retienen plásticos, telas y residuos de mayor tamaño.",
-  objective:"Retener residuos sólidos gruesos.",
-  process:"Desbaste y separación física.",
-  turbidity:120,
-  efficiency:12,
-  ph:6.5
- },
- {
-  name:"Sedimentación primaria",
-  description:"Las partículas suspendidas más pesadas se depositan por acción de la gravedad en el fondo del sedimentador.",
-  objective:"Reducir sólidos sedimentables.",
-  process:"Sedimentación.",
-  turbidity:95,
-  efficiency:25,
-  ph:6.55
- },
- {
-  name:"Tratamiento biológico",
-  description:"Los microorganismos degradan parte de la materia orgánica biodegradable. El aire suministrado permite mantener condiciones aerobias.",
-  objective:"Reducir la materia orgánica biodegradable.",
-  process:"Degradación biológica.",
-  turbidity:55,
-  efficiency:54,
-  ph:6.8
- },
- {
-  name:"Filtración",
-  description:"El agua atraviesa medios filtrantes que retienen partículas finas y ayudan a mejorar sus características físicas.",
-  objective:"Disminuir la turbidez y sólidos suspendidos.",
-  process:"Filtración.",
-  turbidity:20,
-  efficiency:83,
-  ph:6.9
- },
- {
-  name:"Desinfección",
-  description:"Se aplica un proceso de desinfección para reducir microorganismos mediante tecnologías como radiación ultravioleta o cloración.",
-  objective:"Reducir microorganismos patógenos.",
-  process:"Desinfección.",
-  turbidity:5,
-  efficiency:96,
-  ph:7.0
- },
- {
-  name:"Almacenamiento y reúso",
-  description:"El agua tratada se almacena y se destina a usos compatibles con su calidad y con los requisitos sanitarios aplicables.",
-  objective:"Aprovechar responsablemente el agua tratada.",
-  process:"Almacenamiento y distribución.",
-  turbidity:3,
-  efficiency:97.5,
-  ph:7.0
- }
-];
-
-/* =====================================
-   17. INTERFAZ DE ETAPAS
-===================================== */
-
-const list=document.getElementById("stationList");
-
-let selected=0;
-
-stages.forEach((s,i)=>{
-
- const button=document.createElement("button");
-
- button.className="station-button";
-
- button.innerHTML=`<span>${i+1}. ${s.name}</span><small>›</small>`;
-
- button.addEventListener("click",()=>{
-  selectStage(i);
- });
-
- list.appendChild(button);
-
-});
-
-function selectStage(i){
-
- selected=i;
-
- const s=stages[i];
-
- document.getElementById("stationTitle").textContent=s.name;
- document.getElementById("description").textContent=s.description;
- document.getElementById("objective").textContent=s.objective;
- document.getElementById("process").textContent=s.process;
- document.getElementById("stageStatus").textContent=s.name;
-
- document.querySelectorAll(".station-button")
- .forEach((b,index)=>{
-  b.classList.toggle("active",index===i);
- });
-
- controls.target.set(xs[i],1,0);
-
- updateMetrics();
- updateProgress();
-}
-
-/* =====================================
-   18. TRANSFORMACIÓN DEL AGUA
-===================================== */
-
+let scene,camera,renderer,controls,clock;
+let running=false;
 let progress=0;
+let lastTime=0;
+let waterMeshes=[];
+let bubbles=[];
+let pipes=[];
+let stationGroups=[];
+let uvLights=[];
+let selectedStage=0;
 
-const stageCount=6;
+const colors=[
+  new THREE.Color("#854d0e"),
+  new THREE.Color("#a16207"),
+  new THREE.Color("#087fbc"),
+  new THREE.Color("#29d9dc")
+];
 
-function colorForProgress(value){
+const stageNames=[
+  "Pretratamiento",
+  "Sedimentación",
+  "Tratamiento biológico",
+  "Filtración y desinfección"
+];
 
- const scaled=THREE.MathUtils.clamp(value,0,1)*5;
-
- const index=Math.min(4,Math.floor(scaled));
-
- const mix=scaled-index;
-
- const a=new THREE.Color(waterColors[index]);
- const b=new THREE.Color(waterColors[index+1]);
-
- return a.lerp(b,mix);
+function material(color,roughness=0.65){
+  return new THREE.MeshStandardMaterial({
+    color:color,
+    roughness:roughness,
+    metalness:0.12
+  });
 }
 
-function updateWater(){
+function box(w,h,d,mat,x,y,z,parent){
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),mat
+  );
+  mesh.position.set(x,y,z);
+  parent.add(mesh);
+  return mesh;
+}
 
- // Los seis tanques representan estados diferentes
- // del proceso, para que el usuario pueda comparar.
- for(let i=0;i<6;i++){
+function cylinder(rt,rb,h,mat,x,y,z,parent){
+  const mesh=new THREE.Mesh(
+    new THREE.CylinderGeometry(rt,rb,h,32),mat
+  );
+  mesh.position.set(x,y,z);
+  parent.add(mesh);
+  return mesh;
+}
 
-  waterSurfaces[i].material=waterMaterials[i];
+function createTank(x,z,index){
+  const group=new THREE.Group();
+  group.position.set(x,0,z);
+  scene.add(group);
+  stationGroups.push(group);
 
- }
+  const concrete=material("#637b8a");
+  const edge=material("#91a8b6");
+  const dark=material("#253d4c");
 
- // El agua en movimiento cambia de color según
- // su posición a lo largo de la planta.
- particles.forEach(p=>{
+  // Base y paredes
+  box(4.2,0.25,3.1,dark,0,0,0,group);
+  box(4.2,1.7,0.18,concrete,0,0.85,-1.46,group);
+  box(4.2,1.7,0.18,concrete,0,0.85,1.46,group);
+  box(0.18,1.7,3.1,concrete,-2.01,0.85,0,group);
+  box(0.18,1.7,3.1,concrete,2.01,0.85,0,group);
 
-  const position=THREE.M
+  // Bordes superiores
+  box(4.3,0.12,0.23,edge,0,1.72,-1.46,group);
+  box(4.3,0.12,0.23,edge,0,1.72,1.46,group);
+  box(0.23,0.12,3.1,edge,-2.01,1.72,0,group);
+  box(0.23,0.12,3.1,edge,2.01,1.72,0,group);
+
+  // Agua con material transparente
+  const waterMat=new THREE.MeshStandardMaterial({
+    color:colors[index],
+    transparent:true,
+    opacity:0.82,
+    roughness:0.2,
+    metalness:0.08,
+    side:THREE.DoubleSide
+  });
+
+  const water=new THREE.Mesh(
+    new THREE.PlaneGeometry(3.75,2.55,30,20),
+    waterMat
+  );
+  water.rotation.x=-Math.PI/2;
+  water.position.y=1.12;
+  group.add(water);
+  waterMeshes.push(water);
+
+  // Ondulación de la superficie
+  water.userData.positions=water.geometry.attributes.position.array.slice();
+
+  // Soportes metálicos
+  for(let side of [-1,1]){
+    for(let j=-1;j<=1;j++){
+      cylinder(0.045,0.045,1.8,edge,side*1.85,0.9,j*0.85,group);
+    }
+  }
+
+  // Elementos diferentes por estación
+  if(index===0){
+    // Rejillas de desbaste
+    for(let i=0;i<9;i++){
+      box(0.055,1.1,0.12,edge,-1.1+i*0.27,1.3,0,group);
+    }
+    box(0.12,1.15,2.1,dark,-1.1,1.3,0,group);
+  }
+
+  if(index===1){
+    // Puente y mecanismo de sedimentación
+    box(0.16,0.12,2.7,edge,0,1.9,0,group);
+    const scraper=box(2.9,0.12,0.12,edge,0,1.4,0,group);
+    scraper.userData.scraper=true;
+  }
+
+  if(index===2){
+    // Aireadores y burbujas
+    for(let i=0;i<5;i++){
+      cylinder(0.13,0.13,0.08,dark,-1.3+i*0.65,0.32,0,group);
+    }
+    for(let i=0;i<18;i++){
+      const bubble=new THREE.Mesh(
+        new THREE.SphereGeometry(0.045+Math.random()*0.04,10,10),
+        new THREE.MeshBasicMaterial({
+          color:"#9defff",
+          transparent:true,
+          opacity:0.75
+        })
+      );
+      bubble.position.set(
+        -1.5+Math.random()*3,
+        0.35+Math.random()*0.65,
+        -0.9+Math.random()*1.8
+      );
+      group.add(bubble);
+      bubbles.push({mesh:bubble,base: bubble.position.y,phase:Math.random()*6.28});
+    }
+  }
+
+  if(index===3){
+    // Filtro de grava y arena
+    for(let i=0;i<3;i++){
+      const layer=box(0.85,0.12,1.8,
+        material(["#8d7654","#c5b28b","#657d8b"][i]),
+        -0.9+i*0.9,0.36+i*0.12,0,group);
+    }
+
+    // Lámparas UV
+    for(let i=0;i<3;i++){
+      const lamp=cylinder(0.055,0.055,1.7,
+        material("#35d5ee",0.2),
+        -0.8+i*0.8,1.48,0,group);
+      lamp.rotation.z=Math.PI/2;
+      uvLights.push(lamp);
+    }
+  }
+
+  // Identificación de estación
+  const label=box(0.9,0.12,0.12,material("#00a896"),0,2.05,0,group);
+  label.position.y=2.05;
+
+  return group;
+}
+
+function createPipe(x1,z1,x2,z2){
+  const dx=x2-x1;
+  const dz=z2-z1;
+  const length=Math.sqrt(dx*dx+dz*dz);
+  const pipe=cylinder(
+    0.105,0.105,length,
+    material("#38bdf8",0.3),
+    (x1+x2)/2,1.3,(z1+z2)/2,scene
+  );
+  pipe.rotation.x=Math.PI/2;
+  pipe.rotation.z=-Math.atan2(dz,dx);
+  pipes.push(pipe);
+}
+
+function init(){
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color("#071522");
+  scene.fog=new THREE.Fog("#071522",24,55);
+
+  camera=new THREE.PerspectiveCamera(
+    45,visor.clientWidth/visor.clientHeight,0.1,100
+  );
+  camera.position.set(8,9,15);
+
+  renderer=new THREE.WebGLRenderer({
+    antialias:true,
+    alpha:false
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.setSize(visor.clientWidth,visor.clientHeight);
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  visor.appendChild(renderer.domElement);
+
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;
+  controls.target.set(0,0.7,0);
+  controls.maxPolarAngle=Math.PI/2.05;
+  controls.minDistance=7;
+  controls.maxDistance=28;
+
+  clock=new THREE.Clock();
+
+  // Iluminación
+  scene.add(new THREE.HemisphereLight("#b9eaff","#193044",1.3));
+
+  const sun=new THREE.DirectionalLight("#ffffff",1.6);
+  sun.position.set(7,12,8);
+  sun.castShadow=true;
+  scene.add(sun);
+
+  const fill=new THREE.PointLight("#00a896",1.1,35);
+  fill.position.set(-7,5,-5);
+  scene.add(fill);
+
+  // Suelo
+  const floor=new THREE.Mesh(
+    new THREE.PlaneGeometry(40,30),
+    material("#102638")
+  );
+  floor.rotation.x=-Math.PI/2;
+  floor.position.y=-0.17;
+  floor.receiveShadow=true;
+  scene.add(floor);
+
+  // Cuatro estaciones alineadas
+  const positions=[-9,-3,3,9];
+  for(let i=0;i<4;i++){
+    createTank(positions[i],0,i);
+  }
+
+  // Tuberías entre estaciones
+  for(let i=0;i<3;i++){
+    createPipe(positions[i]+2.1,0,positions[i+1]-2.1,0);
+  }
+
+  // Tubería de entrada y salida
+  createPipe(-13,0,-11.1,0);
+  createPipe(11.1,0,13,0);
+
+  // Señal de salida
+  const outlet=cylinder(0.12,0.12,1.5,material("#29d9dc"),13.2,1.3,0,scene);
+  outlet.rotation.z=Math.PI/2;
+
+  // Luces de referencia
+  for(let i=0;i<4;i++){
+    const light=new THREE.PointLight("#00a896",0.5,5);
+    light.position.set(positions[i],3,0);
+    scene.add(light);
+  }
+
+  // Partículas que recorren el proceso
+  createFlowParticles();
+
+  mensaje.style.display="none";
+  animate();
+  updateProgress(0);
+}
+
+let flowParticles=[];
+
+function createFlowParticles(){
+  for(let i=0;i<45;i++){
+    const particle=new THREE.Mesh(
+      new THREE.SphereGeometry(0.065,10,10),
+      new THREE.MeshStandardMaterial({
+        color:"#38bdf8",
+        emissive:"#087fbc",
+        emissiveIntensity:0.35
+      })
+    );
+    scene.add(particle);
+    flowParticles.push(particle);
+  }
+}
+
+// Mezcla gradual de colores
+function interpolateWater(stage,localProgress){
+  const start=colors[stage];
+  const end=colors[Math.min(stage+1,3)];
+  return start.clone().lerp(end,localProgress);
+}
+
+function updateWaterColors(value){
+  const scaled=value/100*3;
+  const currentStage=Math.min(2,Math.floor(scaled));
+  const local=scaled-currentStage;
+
+  waterMeshes.forEach((water,index)=>{
+    // Cada tanque muestra un punto diferente del proceso.
+    const tankPosition=Math.max(0,Math.min(3,
+      currentStage+local-(3-index)
+    ));
+
+    const stage=Math.min(2,Math.floor(tankPosition));
+    const fraction=tankPosition-stage;
+    const color=interpolateWater(stage,fraction);
+
+    // El agua de cada tanque se actualiza progresivamente.
+    water.material.color.copy(color);
+    water.material.opacity=0.76+0.08*Math.sin(tankPosition*Math.PI);
+  });
+}
+
+function updateProgress(value){
+  progress=Math.max(0,Math.min(100,Number(value)));
+  document.getElementById("avance").value=progress;
+
+  updateWaterColors(progress);
+
+  const scaled=progress/100*3;
+  selectedStage=Math.min(3,Math.floor(scaled));
+
+  document.querySelectorAll(".estacion").forEach((el,i)=>{
+    el.classList.toggle("seleccionada",i===selectedStage);
+  });
+
+  document.getElementById("ph").textContent=
+    (6.2+progress*0.017).toFixed(1);
+
+  document.getElementById("turbidez").textContent=
+    Math.round(180-progress*1.72)+" NTU";
+
+  document.getElementById("eficiencia").textContent=
+    Math.round(progress*0.94)+"%";
+
+  document.getElementById("estado").textContent=
+    progress<25?"Pretratamiento":
+    progress<50?"Sedimentación":
+    progress<75?"Biológico":
+    progress<100?"Filtración":"Finalizado";
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  const elapsed=clock.getElapsedTime();
+
+  if(running){
+    progress+=clock.getDelta()*3.2;
+    if(progress>=100){
+      progress=100;
+      running=false;
+    }
+    updateProgress(progress);
+  }
+
+  // Movimiento de la superficie del agua
+  waterMeshes.forEach((water,index)=>{
+    const positions=water.geometry.attributes.position;
+    const original=water.userData.positions;
+
+    for(let i=0;i<positions.count;i++){
+      const x=original[i*3];
+      const y=original[i*3+1];
+      const wave=Math.sin(x*2+elapsed*1.5+index)*0.025+
+                 Math.cos(y*2+elapsed+index)*0.018;
+      positions.setZ(i,wave);
+    }
+    positions.needsUpdate=true;
+    water.geometry.computeVertexNormals();
+  });
+
+  // Burbujas ascendentes
+  bubbles.forEach(b=>{
+    b.mesh.position.y=0.35+
+      ((elapsed*0.65+b.phase)%1.2);
+  });
+
+  // Movimiento de partículas por la planta
+  flowParticles.forEach((particle,i)=>{
+    const offset=i/flowParticles.length;
+    const travel=((elapsed*0.035+offset)%1);
+    const x=-13+travel*26;
+    particle.position.set(
+      x,
+      1.2+Math.sin(elapsed*2+i)*0.12,
+      Math.sin(elapsed+i)*0.3
+    );
+
+    const color=interpolateWater(
+      Math.min(2,Math.floor(travel*3)),
+      (travel*3)%1
+    );
+    particle.material.color.copy(color);
+  });
+
+  // Iluminación de las lámparas UV
+  uvLights.forEach(lamp=>{
+    lamp.material.emissive=new THREE.Color("#087fbc");
+    lamp.material.emissiveIntensity=0.7+Math.sin(elapsed*3)*0.3;
+  });
+
+  controls.update();
+  renderer.render(scene,camera);
+}
+
+function resize(){
+  if(!renderer||!camera)return;
+  const width=visor.clientWidth;
+  const height=visor.clientHeight;
+  camera.aspect=width/height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width,height);
+}
+
+document.getElementById("iniciar").addEventListener("click",()=>{
+  if(progress>=100)updateProgress(0);
+  running=true;
+});
+
+document.getElementById("pausar").addEventListener("click",()=>{
+  running=false;
+});
+
+document.getElementById("reiniciar").addEventListener("click",()=>{
+  running=false;
+  updateProgress(0);
+});
+
+document.getElementById("vista").addEventListener("click",()=>{
+  camera.position.set(8,9,15);
+  controls.target.set(0,0.7,0);
+  controls.update();
+});
+
+document.getElementById("avance").addEventListener("input",e=>{
+  running=false;
+  updateProgress(e.target.value);
+});
+
+document.getElementById("caudal").addEventListener("input",e=>{
+  document.getElementById("valorCaudal").textContent=e.target.value;
+});
+
+document.querySelectorAll(".estacion").forEach((el,index)=>{
+  el.addEventListener("click",()=>{
+    running=false;
+    updateProgress(index*100/3);
+    camera.position.set(
+      [-9,-3,3,9][index]+3,
+      5,
+      7
+    );
+    controls.target.set([-9,-3,3,9][index],0.7,0);
+    controls.update();
+  });
+});
+
+window.addEventListener("resize",resize);
+
+try{
+  init();
+}catch(error){
+  console.error(error);
+  mensaje.style.display="flex";
+  mensaje.textContent="Ocurrió un error al crear el visor 3D: "+error.message;
+}
+})();
+</script>
+</body>
+</html>
+
