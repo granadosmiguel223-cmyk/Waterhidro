@@ -5,11 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaSim 3D Pro</title>
+
 <style>
 :root {
   --bg:#06111f;
   --panel:#0d2033;
-  --panel2:#102941;
   --cyan:#20d9e8;
   --blue:#168bff;
   --text:#e8f7ff;
@@ -161,7 +161,10 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   background:#ffffff55;
   animation:wave 3s ease-in-out infinite alternate;
 }
-@keyframes wave{from{transform:translateX(-8px) scaleY(.7)}to{transform:translateX(12px) scaleY(1.2)}}
+@keyframes wave{
+  from{transform:translateX(-8px) scaleY(.7)}
+  to{transform:translateX(12px) scaleY(1.2)}
+}
 .water::after{
   content:"";
   position:absolute;inset:0;
@@ -169,9 +172,7 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   animation:flow 5s linear infinite;
 }
 @keyframes flow{to{background-position:100px 0}}
-.tank-details{
-  position:absolute;inset:0;pointer-events:none;
-}
+.tank-details{position:absolute;inset:0;pointer-events:none}
 .pipe{
   position:absolute;width:95px;height:15px;
   background:linear-gradient(#a9c5d4,#426a80);
@@ -184,14 +185,15 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   content:"";position:absolute;right:-8px;top:-7px;
   height:25px;width:12px;border-radius:4px;background:#8eacbd;
 }
-.pipe-left{
-  left:-70px;right:auto;
-}
+.pipe-left{left:-70px;right:auto}
 .grate{
   position:absolute;left:18%;right:18%;top:30px;height:150px;
   display:flex;justify-content:space-around;
 }
-.grate span{width:6px;background:linear-gradient(90deg,#a7c3d0,#3e6275);border-radius:4px}
+.grate span{
+  width:6px;background:linear-gradient(90deg,#a7c3d0,#3e6275);
+  border-radius:4px;
+}
 .blades{
   position:absolute;left:50%;top:40%;width:95px;height:95px;
   transform:translate(-50%,-50%);
@@ -203,7 +205,9 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   width:5px;height:80px;background:#c3d6df;border-radius:5px;
 }
 .blades::after{transform:rotate(90deg)}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes spin{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
 .filter-layers{
   position:absolute;left:8px;right:8px;bottom:8px;height:42%;
   background:repeating-linear-gradient(to bottom,#c5a66c 0 12px,#b4c9c8 12px 20px,#526d7d 20px 28px);
@@ -217,19 +221,21 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   width:8px;height:90px;border-radius:10px;
   background:#9e83ff;box-shadow:0 0 18px #8e6bff,0 0 35px #8e6bff;
 }
-.bubbles{
-  position:absolute;inset:0;pointer-events:none;
-}
+.bubbles{position:absolute;inset:0;pointer-events:none}
 .bubble{
   position:absolute;bottom:-15px;
   width:7px;height:7px;border-radius:50%;
   border:1px solid #ffffff99;
   animation:rise 4s linear infinite;
 }
-@keyframes rise{to{transform:translateY(-230px);opacity:0}}
+@keyframes rise{
+  to{transform:translateY(-230px);opacity:0}
+}
 .tank-caption{
-  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  white-space:nowrap;background:#061726;border:1px solid #41657a;
+  position:absolute;bottom:-8px;left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;background:#061726;
+  border:1px solid #41657a;
   padding:8px 18px;border-radius:8px;font-size:12px;
 }
 .viewer-controls{
@@ -248,21 +254,107 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
 .description h3{margin:0 0 9px;font-size:17px}
 .description p{color:#abc2d2;font-size:13px;line-height:1.6;margin:0}
 .progress-box{margin-top:17px}
-.progress-heading{display:flex;justify-content:space-between;font-size:11px;margin-bottom:8px;color:#b6d0df}
-.progress-track{height:8px;background:#1b354a;border-radius:10px;overflow:hidden}
+.progress-heading{
+  display:flex;justify-content:space-between;
+  font-size:11px;margin-bottom:8px;color:#b6d0df;
+}
+.progress-track{
+  height:8px;background:#1b354a;
+  border-radius:10px;overflow:hidden;
+}
 .progress-fill{
-  height:100%;width:20%;
+  height:100%;width:16.67%;
   background:linear-gradient(90deg,#087dca,#26e0df);
   border-radius:10px;transition:width .5s;
 }
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:17px}
-.metric{background:#071b2b;border:1px solid #24445b;border-radius:10px;padding:10px}
+.metrics{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;margin-top:17px;
+}
+.metric{
+  background:#071b2b;border:1px solid #24445b;
+  border-radius:10px;padding:10px;
+}
 .metric small{font-size:10px;color:#89a9bd}
-.metric strong{display:block;font-size:17px;color:#3bdbe8;margin-top:6px}
+.metric strong{
+  display:block;font-size:17px;color:#3bdbe8;margin-top:6px;
+}
 .metric em{font-size:9px;color:#819daf;font-style:normal}
-.bottom-nav{display:flex;gap:10px;margin-top:15px}
-.bottom-nav button{flex:1}
-.note{font-size:10px;color:#7896aa;margin-top:12px;line-height:1.5}
+.note{
+  font-size:10px;color:#7896aa;
+  margin-top:12px;line-height:1.5;
+}
+
+/* PANEL MATEMÁTICO */
+
+.math-dashboard{
+  margin-top:25px;
+  padding:22px;
+}
+.math-dashboard h2{
+  color:#36dce8;font-size:21px;margin:0 0 9px;
+}
+.math-intro,.math-description{
+  color:#9db8ca;font-size:13px;line-height:1.6;
+}
+.math-module{
+  margin-top:20px;padding:19px;
+  border:1px solid #294d65;border-radius:14px;
+  background:linear-gradient(145deg,#0a1e30,#102b40);
+}
+.math-module h3{
+  color:#d9f8ff;font-size:16px;margin:0 0 14px;
+}
+.math-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;margin:15px 0;
+}
+.math-grid label{
+  display:flex;flex-direction:column;gap:7px;
+  color:#a9c8d9;font-size:12px;
+}
+.math-grid input{
+  width:100%;min-width:0;padding:11px;
+  border:1px solid #31556d;border-radius:8px;
+  background:#061725;color:#40dce9;
+  font-size:14px;outline:none;
+}
+.math-grid input:focus{
+  border-color:#24d5e5;
+  box-shadow:0 0 10px #20d9e833;
+}
+.math-results{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;margin-top:17px;
+}
+.math-result{
+  padding:13px;border-radius:10px;
+  background:#061725;border:1px solid #25465c;
+  min-width:0;
+}
+.math-result small{
+  display:block;color:#8daabd;
+  font-size:10px;margin-bottom:8px;
+}
+.math-result strong{
+  color:#35dce8;font-size:clamp(13px,2vw,19px);
+  overflow-wrap:anywhere;
+}
+.equation{
+  margin:15px 0;padding:13px;
+  background:#071725;border-left:3px solid #1bc9df;
+  border-radius:7px;color:#b8d8e8;
+  font-size:12px;line-height:1.7;overflow-wrap:anywhere;
+}
+.equation b{color:#40dce9}
+.equation p{margin:5px 0}
+.math-note{
+  color:#809daf;font-size:11px;
+  line-height:1.6;margin-top:17px;
+}
+.math-error{color:#ffb4b4;font-size:12px;margin-top:10px}
 @media(max-width:800px){
   .layout{grid-template-columns:1fr}
   .stage-list{display:grid;grid-template-columns:repeat(2,1fr)}
@@ -272,6 +364,11 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   header{padding:15px 4%}
   .status{font-size:10px}
 }
+@media(max-width:700px){
+  .math-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .math-results{grid-template-columns:1fr}
+  .math-dashboard{padding:14px}
+}
 @media(max-width:430px){
   .stage-list{grid-template-columns:1fr 1fr}
   .stage-btn{padding:9px 7px;gap:7px}
@@ -280,8 +377,12 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
   .tank-wrap{transform:scale(.68)}
   .viewer,.scene{height:320px;min-height:320px}
 }
+@media(max-width:380px){
+  .math-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -296,71 +397,101 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
 </header>
 
 <main>
+
   <div class="intro">
     <h2>Recorrido interactivo del tratamiento</h2>
-    <p>Selecciona una etapa para observar su tanque, conocer el proceso y visualizar cómo cambia el agua durante el tratamiento.</p>
+    <p>
+      Selecciona una etapa para observar su tanque, conocer el proceso
+      y visualizar cómo cambia el agua durante el tratamiento.
+    </p>
   </div>
 
   <div class="layout">
+
     <aside class="panel">
       <h3>ETAPAS DEL TRATAMIENTO</h3>
       <div class="stage-list" id="stageList"></div>
-      <p class="note">Selecciona cualquier etapa para enfocar su tanque y observar el estado del agua.</p>
+      <p class="note">
+        Selecciona cualquier etapa para enfocar su tanque y observar
+        el estado del agua.
+      </p>
     </aside>
 
     <section class="right">
+
       <div class="viewer">
+
         <div class="viewer-top">
-          <div class="view-label">VISTA 3D · <span id="viewNumber">ETAPA 01</span></div>
+          <div class="view-label">
+            VISTA 3D · <span id="viewNumber">ETAPA 01</span>
+          </div>
           <div class="view-label" id="waterLabel">Agua residual</div>
         </div>
 
         <div class="scene">
           <div class="floor"></div>
+
           <div class="tank-wrap" id="tankWrap">
             <div class="tank">
               <div class="water" id="water"></div>
               <div class="tank-details" id="tankDetails"></div>
               <div class="bubbles" id="bubbles"></div>
             </div>
+
             <div class="pipe"></div>
             <div class="pipe pipe-left"></div>
-            <div class="tank-caption" id="tankCaption">Tanque de pretratamiento</div>
+
+            <div class="tank-caption" id="tankCaption">
+              Tanque de pretratamiento
+            </div>
           </div>
         </div>
 
         <div class="viewer-controls">
-          <button class="control" onclick="changeView(-1)">← Anterior</button>
-          <button class="control primary" onclick="toggleSimulation()" id="playButton">▶ Simular</button>
-          <button class="control" onclick="changeView(1)">Siguiente →</button>
+          <button class="control" onclick="changeView(-1)">
+            ← Anterior
+          </button>
+          <button class="control primary" onclick="toggleSimulation()" id="playButton">
+            ▶ Simular
+          </button>
+          <button class="control" onclick="changeView(1)">
+            Siguiente →
+          </button>
         </div>
+
       </div>
 
       <div class="info-grid">
+
         <div class="panel description">
           <h3 id="stageTitle">1. Pretratamiento</h3>
           <p id="stageDescription"></p>
+
           <div class="progress-box">
             <div class="progress-heading">
               <span>Progreso del recorrido</span>
-              <span id="progressText">20%</span>
+              <span id="progressText">16.67%</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill" id="progressFill"></div>
             </div>
           </div>
-          <div class="bottom-nav">
+
+          <div style="display:flex;gap:10px;margin-top:15px">
             <button class="control" onclick="restart()">↺ Reiniciar</button>
-            <button class="control primary" onclick="changeView(1)">Continuar etapa →</button>
+            <button class="control primary" onclick="changeView(1)">
+              Continuar etapa →
+            </button>
           </div>
         </div>
 
         <div class="panel">
           <h3>Indicadores ilustrativos</h3>
+
           <div class="metrics">
             <div class="metric">
               <small>Turbidez</small>
-              <strong id="turbidity">Alta</strong>
+              <strong id="turbidity">Muy alta</strong>
               <em>Aspecto visual</em>
             </div>
             <div class="metric">
@@ -370,213 +501,244 @@ main{max-width:1250px;margin:auto;padding:25px 4% 50px}
             </div>
             <div class="metric">
               <small>Claridad</small>
-              <strong id="clarity">Baja</strong>
+              <strong id="clarity">Muy baja</strong>
               <em>Estimación visual</em>
             </div>
           </div>
-          <p class="note">Los indicadores son valores didácticos de demostración. No representan mediciones reales ni garantizan la calidad del agua.</p>
+
+          <p class="note">
+            Los indicadores son valores didácticos de demostración.
+            No representan mediciones reales.
+          </p>
         </div>
+
       </div>
     </section>
   </div>
+
+  <!-- DASHBOARD MATEMÁTICO -->
+
+  <section class="panel math-dashboard" id="calculations">
+
+    <h2>📐 Panel de cálculos hidráulicos</h2>
+
+    <p class="math-intro">
+      Modifica las variables para calcular caudales, volúmenes,
+      costos de operación y geometría de canales.
+    </p>
+
+    <!-- VARIABLES HIDRÁULICAS -->
+
+    <div class="math-module">
+
+      <h3>1. Variables hidráulicas</h3>
+
+      <div class="math-grid">
+
+        <label>
+          Caudal (L/s)
+          <input id="flowRate" type="number" step="any" min="0" value="2.85">
+        </label>
+
+        <label>
+          Cota inicial (m)
+          <input id="elevation1" type="number" step="any" value="12.50">
+        </label>
+
+        <label>
+          Cota final (m)
+          <input id="elevation2" type="number" step="any" value="9.80">
+        </label>
+
+        <label>
+          Largo del tanque (m)
+          <input id="tankLength" type="number" step="any" min="0" value="8.50">
+        </label>
+
+        <label>
+          Ancho del tanque (m)
+          <input id="tankWidth" type="number" step="any" min="0" value="4.00">
+        </label>
+
+        <label>
+          Profundidad del agua (m)
+          <input id="tankDepth" type="number" step="any" min="0" value="2.20">
+        </label>
+
+      </div>
+
+      <button class="control primary" onclick="calculateHydraulics()">
+        Calcular variables
+      </button>
+
+      <div class="math-results">
+
+        <div class="math-result">
+          <small>Caudal convertido</small>
+          <strong id="resultFlow">2.85 L/s</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Volumen del tanque</small>
+          <strong id="resultVolume">74.80 m³</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Diferencia de cotas</small>
+          <strong id="resultElevation">-2.70 m</strong>
+        </div>
+
+      </div>
+
+      <div class="equation">
+        <b>Ecuaciones utilizadas</b>
+        <p>Q (m³/s) = Q (L/s) ÷ 1000</p>
+        <p>V = Largo × Ancho × Profundidad</p>
+        <p>ΔH = Cota final − Cota inicial</p>
+        <p id="flowConversion">Q = 2.85 ÷ 1000 = 0.00285 m³/s</p>
+      </div>
+
+    </div>
+
+    <!-- MODELO ECONÓMICO -->
+
+    <div class="math-module">
+
+      <h3>2. Modelo económico lineal</h3>
+
+      <p class="math-description">
+        Proyección del costo mensual de operación según el volumen
+        de agua tratado.
+      </p>
+
+      <div class="math-grid">
+
+        <label>
+          Tarifa por m³ (COP)
+          <input id="waterTariff" type="number" step="any" min="0" value="450">
+        </label>
+
+        <label>
+          Cargo fijo mensual (COP)
+          <input id="fixedCost" type="number" step="any" min="0" value="250000">
+        </label>
+
+        <label>
+          Días de operación al mes
+          <input id="operationDays" type="number" step="1" min="1" max="31" value="30">
+        </label>
+
+      </div>
+
+      <div class="equation">
+        <b>Modelo lineal</b>
+        <p>Costo = Volumen × Tarifa + Cargo fijo</p>
+        <p>Volumen mensual = Caudal × 86.4 × días</p>
+        <p id="linearSubstitution">
+          Costo = 7,394.40 × 450 + 250,000
+        </p>
+      </div>
+
+      <button class="control primary" onclick="calculateEconomics()">
+        Calcular costo mensual
+      </button>
+
+      <div class="math-results">
+
+        <div class="math-result">
+          <small>Volumen mensual</small>
+          <strong id="monthlyVolume">7,394.40 m³</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Costo variable</small>
+          <strong id="variableCost">$3,327,480</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Costo total mensual</small>
+          <strong id="totalCost">$3,577,480</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- MODELO GEOMÉTRICO CUADRÁTICO -->
+
+    <div class="math-module">
+
+      <h3>3. Modelo geométrico cuadrático</h3>
+
+      <p class="math-description">
+        Se representa la sección transversal de un canal trapezoidal.
+        Su área depende de la profundidad del agua.
+      </p>
+
+      <div class="math-grid">
+
+        <label>
+          Base inferior b (m)
+          <input id="channelBase" type="number" step="any" min="0" value="0.60">
+        </label>
+
+        <label>
+          Pendiente lateral m
+          <input id="channelSlope" type="number" step="any" min="0" value="1.50">
+        </label>
+
+        <label>
+          Profundidad y (m)
+          <input id="channelDepth" type="number" step="any" min="0" value="1.20">
+        </label>
+
+      </div>
+
+      <div class="equation">
+        <b>Ecuación cuadrática</b>
+        <p>A(y) = b × y + m × y²</p>
+        <p id="quadraticSubstitution">
+          A(y) = 0.60 × 1.20 + 1.50 × 1.20²
+        </p>
+      </div>
+
+      <button class="control primary" onclick="calculateGeometry()">
+        Calcular área del canal
+      </button>
+
+      <div class="math-results">
+
+        <div class="math-result">
+          <small>Área transversal</small>
+          <strong id="channelArea">2.88 m²</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Ancho superior</small>
+          <strong id="topWidth">4.20 m</strong>
+        </div>
+
+        <div class="math-result">
+          <small>Tipo de sección</small>
+          <strong>Trapezoidal</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <p class="math-note">
+      Nota: las tarifas y dimensiones iniciales son datos de demostración.
+      Deben reemplazarse por los datos reales del proyecto.
+      Los cálculos son educativos y no sustituyen un diseño hidráulico profesional.
+    </p>
+
+  </section>
+
 </main>
 
 <script>
-const stages = [
- {
-  name:"Pretratamiento",
-  subtitle:"Retención de residuos grandes",
-  title:"1. Pretratamiento",
-  tank:"Tanque de desbaste",
-  description:"El agua residual ingresa al sistema con residuos sólidos, arena y materiales de gran tamaño. Las rejillas retienen los objetos que podrían afectar los equipos de las siguientes etapas.",
-  color:"linear-gradient(180deg,#79512d,#4c321f)",
-  turbidity:"Muy alta",ph:"6.5",clarity:"Muy baja",
-  detail:"grate",label:"Agua residual sin tratar",level:"70%"
- },
- {
-  name:"Sedimentación",
-  subtitle:"Separación de partículas",
-  title:"2. Sedimentación primaria",
-  tank:"Tanque sedimentador",
-  description:"El agua permanece en reposo relativo para permitir que las partículas suspendidas más pesadas se depositen en el fondo. Así se reduce una parte de los sólidos presentes.",
-  color:"linear-gradient(180deg,#9b783e,#6b572f)",
-  turbidity:"Alta",ph:"6.7",clarity:"Baja",
-  detail:"",label:"Agua con menos sólidos",level:"66%"
- },
- {
-  name:"Tratamiento biológico",
-  subtitle:"Acción de microorganismos",
-  title:"3. Tratamiento biológico",
-  tank:"Reactor biológico",
-  description:"Los microorganismos ayudan a descomponer la materia orgánica presente en el agua. En esta representación se observa la aireación mediante burbujas y el movimiento del sistema.",
-  color:"linear-gradient(180deg,#548c78,#276d62)",
-  turbidity:"Media",ph:"7.0",clarity:"Media",
-  detail:"blades",label:"Agua en tratamiento biológico",level:"72%"
- },
- {
-  name:"Filtración",
-  subtitle:"Retención de partículas pequeñas",
-  title:"4. Filtración",
-  tank:"Tanque de filtración",
-  description:"El agua atraviesa diferentes capas de materiales filtrantes que retienen partículas pequeñas que todavía pueden permanecer suspendidas después de los procesos anteriores.",
-  color:"linear-gradient(180deg,#258caa,#14637d)",
-  turbidity:"Baja",ph:"7.1",clarity:"Alta",
-  detail:"filter",label:"Agua filtrada",level:"65%"
- },
- {
-  name:"Desinfección",
-  subtitle:"Reducción de microorganismos",
-  title:"5. Desinfección",
-  tank:"Tanque de desinfección",
-  description:"En esta etapa se aplica un proceso de desinfección, representado mediante luz ultravioleta, para reducir microorganismos que pueden estar presentes en el agua.",
-  color:"linear-gradient(180deg,#22b9c9,#087b9c)",
-  turbidity:"Muy baja",ph:"7.2",clarity:"Muy alta",
-  detail:"uv",label:"Agua desinfectada",level:"68%"
- },
- {
-  name:"Almacenamiento",
-  subtitle:"Agua tratada para reúso",
-  title:"6. Almacenamiento final",
-  tank:"Depósito de agua tratada",
-  description:"El agua tratada se almacena para su posterior aprovechamiento, de acuerdo con la calidad obtenida y el uso permitido. El reúso debe cumplir los requisitos correspondientes.",
-  color:"linear-gradient(180deg,#40d9df,#1689b9)",
-  turbidity:"Muy baja",ph:"7.2",clarity:"Muy alta",
-  detail:"",label:"Agua tratada almacenada",level:"78%"
- }
-];
 
-let current=0;
-let playing=false;
-let timer=null;
-
-const stageList=document.getElementById("stageList");
-
-stages.forEach((s,i)=>{
- const b=document.createElement("button");
- b.className="stage-btn";
- b.innerHTML=`
-   <span class="stage-number">${String(i+1).padStart(2,"0")}</span>
-   <span><div class="stage-name">${s.name}</div>
-   <div class="stage-sub">${s.subtitle}</div></span>`;
- b.onclick=()=>selectStage(i);
- stageList.appendChild(b);
-});
-
-function selectStage(index){
- current=Math.max(0,Math.min(stages.length-1,index));
- const s=stages[current];
-
- document.querySelectorAll(".stage-btn").forEach((b,i)=>{
-  b.classList.toggle("active",i===current);
- });
-
- const tankWrap=document.getElementById("tankWrap");
- tankWrap.style.opacity="0";
- tankWrap.style.transform="translateY(12px) scale(.94)";
-
- setTimeout(()=>{
-  document.getElementById("water").style.background=s.color;
-  document.getElementById("water").style.height=s.level;
-  document.getElementById("waterLabel").textContent=s.label;
-  document.getElementById("viewNumber").textContent="ETAPA "+String(current+1).padStart(2,"0");
-  document.getElementById("tankCaption").textContent=s.tank;
-  document.getElementById("stageTitle").textContent=s.title;
-  document.getElementById("stageDescription").textContent=s.description;
-  document.getElementById("turbidity").textContent=s.turbidity;
-  document.getElementById("ph").textContent=s.ph;
-  document.getElementById("clarity").textContent=s.clarity;
-
-  const progress=Math.round(((current+1)/stages.length)*100);
-  document.getElementById("progressText").textContent=progress+"%";
-  document.getElementById("progressFill").style.width=progress+"%";
-
-  renderDetails(s.detail);
-  tankWrap.style.opacity="1";
-  tankWrap.style.transform="translateY(0) scale(1)";
- },180);
-}
-
-function renderDetails(type){
- const details=document.getElementById("tankDetails");
- const bubbles=document.getElementById("bubbles");
- details.innerHTML="";
- bubbles.innerHTML="";
-
- if(type==="grate"){
-  const grate=document.createElement("div");
-  grate.className="grate";
-  for(let i=0;i<9;i++){
-   const bar=document.createElement("span");
-   grate.appendChild(bar);
-  }
-  details.appendChild(grate);
- }
- if(type==="blades"){
-  const blades=document.createElement("div");
-  blades.className="blades";
-  details.appendChild(blades);
- }
- if(type==="filter"){
-  const filter=document.createElement("div");
-  filter.className="filter-layers";
-  details.appendChild(filter);
- }
- if(type==="uv"){
-  const lights=document.createElement("div");
-  lights.className="uv-lights";
-  for(let i=0;i<5;i++){
-   lights.appendChild(document.createElement("span"));
-  }
-  details.appendChild(lights);
- }
-
- if(current===2){
-  for(let i=0;i<18;i++){
-   const bubble=document.createElement("span");
-   bubble.className="bubble";
-   bubble.style.left=(5+Math.random()*90)+"%";
-   bubble.style.animationDelay=(Math.random()*3)+"s";
-   bubble.style.animationDuration=(2.5+Math.random()*2)+"s";
-   bubbles.appendChild(bubble);
-  }
- }
-}
-
-function changeView(direction){
- stopSimulation();
- selectStage(current+direction);
-}
-
-function restart(){
- stopSimulation();
- selectStage(0);
-}
-
-function toggleSimulation(){
- if(playing){
-  stopSimulation();
-  return;
- }
- if(current===stages.length-1) selectStage(0);
- playing=true;
- document.getElementById("playButton").textContent="Ⅱ Pausar";
- timer=setInterval(()=>{
-  if(current<stages.length-1){
-   selectStage(current+1);
-  }else{
-   stopSimulation();
-  }
- },3000);
-}
-
-function stopSimulation(){
- playing=false;
- clearInterval(timer);
- timer=null;
- document.getElementById("playButton").textContent="▶ Simular";
-}
-
-selectStage(0);
-</script>
-</body>
-</html>
+/* ===================================
+   ETAPAS DEL TRATAMIENTO DE AGUA
+===================================
