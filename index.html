@@ -1,716 +1,180 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AquaSim 3D Pro</title>
-
+<meta name="theme-color" content="#071625">
+<title>AquaSim 3D Pro | Simulador hidráulico</title>
 <style>
-:root{
-  --bg:#06111f;
-  --panel:#0d2033;
-  --cyan:#20d9e8;
-  --blue:#168bff;
-  --text:#e8f7ff;
-  --muted:#8da9bd;
-}
+:root{--bg:#06111f;--panel:#0d2033;--cyan:#20d9e8;--blue:#168bff;--text:#e8f7ff;--muted:#8da9bd;--line:#24445d}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  color:var(--text);
-  background:radial-gradient(ellipse at top,#153d5d,#06111f 65%);
-  min-height:100vh;
-}
-button,input{font:inherit}
-button{touch-action:manipulation}
-header{
-  padding:18px 5%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  border-bottom:1px solid #24445d;
-  background:#071625;
-}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-icon{
-  width:45px;height:45px;border-radius:13px;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,#087cbb,#20d9e8);
-  font-size:23px;
-  box-shadow:0 0 25px #0db9db55;
-}
-.logo h1{font-size:19px;margin:0}
-.logo p{font-size:11px;color:var(--muted);margin:4px 0 0}
-.status{
-  color:#54f0b2;font-size:11px;
-  border:1px solid #1c9c75;
-  padding:8px 12px;border-radius:20px;
-}
-main{max-width:1300px;margin:auto;padding:25px 4% 50px}
-.intro{margin-bottom:22px}
-.intro h2{font-size:25px;margin:0 0 8px}
-.intro p{color:var(--muted);font-size:14px;line-height:1.5;margin:0}
-.panel{
-  background:linear-gradient(145deg,#102941,#0a1b2c);
-  border:1px solid #24445d;
-  border-radius:17px;
-  padding:17px;
-  box-shadow:0 12px 35px #0003;
-}
-.layout{
-  display:grid;
-  grid-template-columns:260px minmax(0,1fr);
-  gap:18px;
-}
-.panel h3{font-size:14px;margin:0 0 15px}
-.stage-list{display:flex;flex-direction:column;gap:9px}
-.stage-btn{
-  width:100%;text-align:left;
-  border:1px solid #29465d;
-  background:#0a1c2c;color:var(--text);
-  padding:12px;border-radius:11px;
-  display:flex;align-items:center;gap:11px;
-  cursor:pointer;transition:.2s;
-}
-.stage-btn:hover{border-color:var(--cyan);background:#12334a}
-.stage-btn.active{
-  background:linear-gradient(100deg,#075b83,#123c5d);
-  border-color:var(--cyan);
-  box-shadow:0 0 18px #16cce333;
-}
-.stage-number{
-  width:30px;height:30px;flex-shrink:0;
-  border-radius:9px;background:#1a3850;
-  display:grid;place-items:center;font-size:12px;
-}
-.stage-btn.active .stage-number{background:#13bcd0;color:#031522}
-.stage-name{font-size:12px;font-weight:bold}
-.stage-sub{font-size:10px;color:#91afc3;margin-top:4px}
-.right{display:flex;flex-direction:column;gap:17px}
-.viewer{
-  position:relative;
-  overflow:hidden;
-  min-height:465px;
-  border-radius:17px;
-  border:1px solid #24506c;
-  background:
-    radial-gradient(ellipse at 50% 72%,#15507988,transparent 55%),
-    linear-gradient(160deg,#0c2941,#061321 75%);
-}
-.viewer-top{
-  position:absolute;z-index:10;top:15px;left:17px;right:17px;
-  display:flex;justify-content:space-between;gap:10px;
-  pointer-events:none;
-}
-.view-label{
-  font-size:11px;background:#071b2be8;
-  padding:8px 11px;border:1px solid #31536a;
-  border-radius:8px;
-}
-.view-label span{color:var(--cyan)}
-.scene{
-  height:465px;
-  position:relative;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
-  perspective:1000px;
-}
-.scene-grid{
-  position:absolute;
-  bottom:35px;
-  width:95%;height:140px;
-  background-image:
-    linear-gradient(#23618a35 1px,transparent 1px),
-    linear-gradient(90deg,#23618a35 1px,transparent 1px);
-  background-size:28px 28px;
-  transform:perspective(400px) rotateX(65deg);
-  mask-image:linear-gradient(transparent,#000);
-}
-.glow{
-  position:absolute;
-  width:370px;height:180px;
-  background:#08a6e933;
-  filter:blur(65px);
-  border-radius:50%;
-  bottom:60px;
-}
-.model-position{
-  position:relative;
-  width:340px;
-  height:280px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform-style:preserve-3d;
-  transform:rotateX(-9deg) rotateY(-17deg);
-  transition:transform .55s;
-  z-index:2;
-}
-.model-position.changing{
-  transform:rotateX(-9deg) rotateY(-28deg) scale(.9);
-}
-.tank-model{
-  width:280px;
-  height:205px;
-  position:relative;
-  transform-style:preserve-3d;
-  filter:drop-shadow(0 22px 20px #0008);
-}
-.tank-front{
-  position:absolute;
-  left:0;top:35px;
-  width:250px;height:165px;
-  border:5px solid #8eabba;
-  border-top:7px solid #c3d7e1;
-  border-radius:8px 8px 15px 15px;
-  background:linear-gradient(90deg,#1d3b50,#244b62 50%,#122e43);
-  overflow:hidden;
-  transform:translateZ(35px);
-  box-shadow:inset 0 0 25px #0008;
-}
-.tank-side{
-  position:absolute;
-  top:35px;left:250px;
-  width:70px;height:165px;
-  background:linear-gradient(90deg,#27485e,#10283b);
-  border:4px solid #7895a6;
-  border-left:0;
-  border-radius:0 10px 12px 0;
-  transform:rotateY(90deg) translateZ(35px);
-  transform-origin:left center;
-}
-.tank-top{
-  position:absolute;
-  top:0;left:0;
-  width:250px;height:70px;
-  background:linear-gradient(145deg,#9cb6c5,#456a80);
-  border:4px solid #b3cbd7;
-  border-radius:10px;
-  transform:rotateX(90deg) translateZ(35px);
-  transform-origin:bottom center;
-  opacity:.95;
-}
-.tank-top::after{
-  content:"";
-  position:absolute;inset:10px;
-  border:2px solid #183b53;
-  border-radius:5px;
-  background:#17354a66;
-}
-.water{
-  position:absolute;
-  bottom:0;left:0;right:0;
-  height:70%;
-  transition:height .8s,background 1s;
-  overflow:hidden;
-  border-radius:0 0 8px 8px;
-}
-.water-surface{
-  position:absolute;
-  left:-10%;top:-5px;
-  width:120%;height:13px;
-  background:#ffffff55;
-  border-radius:50%;
-  animation:wave 2.8s ease-in-out infinite alternate;
-}
-.water-flow{
-  position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    115deg,transparent 0 22px,#ffffff12 23px 25px
-  );
-  animation:waterFlow 4s linear infinite;
-}
-@keyframes wave{
-  from{transform:translateX(-9px) scaleY(.8)}
-  to{transform:translateX(10px) scaleY(1.2)}
-}
-@keyframes waterFlow{
-  to{background-position:100px 0}
-}
-.tank-details{
-  position:absolute;inset:0;
-  pointer-events:none;
-}
-.grate{
-  position:absolute;left:16%;right:16%;
-  top:12px;height:135px;
-  display:flex;justify-content:space-around;
-  z-index:4;
-}
-.grate span{
-  width:6px;height:100%;
-  border-radius:4px;
-  background:linear-gradient(90deg,#d2e0e6,#5a7b8d);
-  box-shadow:2px 0 4px #0008;
-}
-.blades{
-  position:absolute;z-index:5;
-  left:50%;top:47%;
-  width:85px;height:85px;
-  border:5px solid #b5d3df;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  animation:spin 4s linear infinite;
-}
-.blades::before,.blades::after{
-  content:"";
-  position:absolute;left:34px;top:0;
-  width:6px;height:70px;
-  border-radius:5px;background:#d3e7ee;
-}
-.blades::after{transform:rotate(90deg)}
-@keyframes spin{
-  to{transform:translate(-50%,-50%) rotate(360deg)}
-}
-.filter-layers{
-  position:absolute;bottom:0;left:0;right:0;
-  height:42%;z-index:4;
-  background:repeating-linear-gradient(
-    to bottom,#c5a66c 0 12px,#b4c9c8 12px 20px,#526d7d 20px 28px
-  );
-  opacity:.9;
-}
-.uv-lights{
-  position:absolute;top:10px;left:12%;right:12%;
-  display:flex;justify-content:space-around;
-  z-index:5;
-}
-.uv-lights span{
-  width:7px;height:110px;
-  border-radius:10px;
-  background:#a58cff;
-  box-shadow:0 0 15px #9e7bff,0 0 28px #8761ff;
-}
-.bubbles{position:absolute;inset:0;z-index:6;pointer-events:none}
-.bubble{
-  position:absolute;bottom:0;
-  width:7px;height:7px;
-  border:1px solid #ffffffb5;
-  background:#d4ffff55;
-  border-radius:50%;
-  animation:bubbleRise 3s linear infinite;
-}
-@keyframes bubbleRise{
-  from{transform:translateY(0);opacity:.8}
-  to{transform:translateY(-145px);opacity:0}
-}
-.pipe{
-  position:absolute;
-  height:13px;width:100px;
-  top:100px;left:-75px;
-  background:linear-gradient(#b7d0dc,#426a80);
-  border:2px solid #c2d7e1;
-  border-radius:7px;
-  transform:translateZ(0);
-  box-shadow:0 4px 8px #0008;
-}
-.pipe-right{left:245px;top:110px}
-.pipe::after{
-  content:"";position:absolute;
-  right:-7px;top:-5px;
-  width:10px;height:18px;
-  border-radius:4px;background:#8eacbd;
-}
-.tank-caption{
-  position:absolute;bottom:-4px;left:50%;
-  transform:translateX(-50%);
-  white-space:nowrap;
-  background:#061726;border:1px solid #41657a;
-  padding:8px 18px;border-radius:8px;
-  font-size:12px;z-index:7;
-}
-.viewer-controls{
-  position:absolute;bottom:14px;left:0;right:0;
-  display:flex;justify-content:center;
-  flex-wrap:wrap;gap:9px;z-index:12;
-}
-.control{
-  border:1px solid #3a6178;
-  background:#0b263b;color:#dff8ff;
-  padding:10px 14px;border-radius:9px;
-  cursor:pointer;font-size:12px;
-}
-.control:hover{background:#125174;border-color:var(--cyan)}
-.control:active{transform:scale(.97)}
-.control.primary{background:#087eaa;border-color:#27d8e8}
-.control:disabled{opacity:.4;cursor:not-allowed}
-.info-grid{
-  display:grid;grid-template-columns:1.2fr 1fr;gap:17px;
-}
-.description h3{margin:0 0 9px;font-size:17px}
-.description p{
-  color:#abc2d2;font-size:13px;line-height:1.6;margin:0;
-}
-.progress-box{margin-top:17px}
-.progress-heading{
-  display:flex;justify-content:space-between;
-  font-size:11px;margin-bottom:8px;color:#b6d0df;
-}
-.progress-track{
-  height:8px;background:#1b354a;
-  border-radius:10px;overflow:hidden;
-}
-.progress-fill{
-  height:100%;width:16.67%;
-  background:linear-gradient(90deg,#087dca,#26e0df);
-  border-radius:10px;transition:width .5s;
-}
-.metrics{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:8px;margin-top:17px;
-}
-.metric{
-  background:#071b2b;border:1px solid #24445b;
-  border-radius:10px;padding:10px;min-width:0;
-}
-.metric small{font-size:10px;color:#89a9bd}
-.metric strong{
-  display:block;font-size:15px;
-  color:#3bdbe8;margin-top:6px;
-  overflow-wrap:anywhere;
-}
-.metric em{font-size:9px;color:#819daf;font-style:normal}
-.note{
-  font-size:10px;color:#7896aa;
-  margin-top:12px;line-height:1.5;
-}
-
-/* MATEMÁTICAS */
-
-.math-dashboard{margin-top:25px;padding:22px}
-.math-dashboard h2{color:#36dce8;font-size:21px;margin:0 0 9px}
-.math-intro,.math-description{
-  color:#9db8ca;font-size:13px;line-height:1.6;
-}
-.math-module{
-  margin-top:20px;padding:19px;
-  border:1px solid #294d65;border-radius:14px;
-  background:linear-gradient(145deg,#0a1e30,#102b40);
-}
-.math-module h3{
-  color:#d9f8ff;font-size:16px;margin:0 0 14px;
-}
-.math-grid{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;margin:15px 0;
-}
-.math-grid label{
-  display:flex;flex-direction:column;gap:7px;
-  color:#a9c8d9;font-size:12px;
-}
-.math-grid input{
-  width:100%;min-width:0;padding:11px;
-  border:1px solid #31556d;border-radius:8px;
-  background:#061725;color:#40dce9;
-  font-size:14px;outline:none;
-}
-.math-grid input:focus{
-  border-color:#24d5e5;
-  box-shadow:0 0 10px #20d9e833;
-}
-.math-results{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;margin-top:17px;
-}
-.math-result{
-  padding:13px;border-radius:10px;
-  background:#061725;border:1px solid #25465c;
-  min-width:0;
-}
-.math-result small{
-  display:block;color:#8daabd;
-  font-size:10px;margin-bottom:8px;
-}
-.math-result strong{
-  color:#35dce8;font-size:clamp(13px,2vw,19px);
-  overflow-wrap:anywhere;
-}
-.equation{
-  margin:15px 0;padding:13px;
-  background:#071725;border-left:3px solid #1bc9df;
-  border-radius:7px;color:#b8d8e8;
-  font-size:12px;line-height:1.7;
-  overflow-wrap:anywhere;
-}
-.equation b{color:#40dce9}
-.equation p{margin:5px 0}
-.math-note{
-  color:#809daf;font-size:11px;
-  line-height:1.6;margin-top:17px;
-}
-@media(max-width:800px){
-  .layout{grid-template-columns:1fr}
-  .stage-list{display:grid;grid-template-columns:repeat(2,1fr)}
-  .info-grid{grid-template-columns:1fr}
-}
-@media(max-width:700px){
-  .math-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .math-results{grid-template-columns:1fr}
-  .math-dashboard{padding:14px}
-  .viewer,.scene{height:420px;min-height:420px}
-  .model-position{transform:rotateX(-9deg) rotateY(-17deg) scale(.82)}
-  .model-position.changing{transform:rotateX(-9deg) rotateY(-28deg) scale(.74)}
-}
-@media(max-width:430px){
-  header{padding:14px 4%}
-  .status{font-size:9px;padding:7px}
-  .logo h1{font-size:16px}
-  .stage-btn{padding:9px 7px;gap:7px}
-  .stage-name{font-size:10px}
-  .stage-sub{font-size:9px}
-  .viewer,.scene{height:390px;min-height:390px}
-  .model-position{transform:rotateX(-9deg) rotateY(-17deg) scale(.68)}
-  .model-position.changing{transform:rotateX(-9deg) rotateY(-28deg) scale(.62)}
-  .viewer-controls{gap:5px}
-  .control{padding:9px 10px;font-size:11px}
-}
-@media(max-width:380px){
-  .math-grid{grid-template-columns:1fr}
-}
+body{margin:0;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(ellipse at top,#153d5d,#06111f 65%);min-height:100vh}
+button,input{font:inherit}button{touch-action:manipulation}
+header{padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:#071625}
+.logo{display:flex;align-items:center;gap:12px}.logo-icon{width:45px;height:45px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#087cbb,#20d9e8);font-size:23px;box-shadow:0 0 25px #0db9db55}
+.logo h1{font-size:19px;margin:0}.logo p{font-size:11px;color:var(--muted);margin:4px 0 0}
+.status{color:#54f0b2;font-size:11px;border:1px solid #1c9c75;padding:8px 12px;border-radius:20px;white-space:nowrap}
+main{max-width:1300px;margin:auto;padding:25px 4% 50px}.intro{margin-bottom:22px}.intro h2{font-size:25px;margin:0 0 8px}.intro p{color:var(--muted);font-size:14px;line-height:1.5;margin:0}
+.panel{background:linear-gradient(145deg,#102941,#0a1b2c);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 12px 35px #0003}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px}.panel h3{font-size:14px;margin:0 0 15px}
+.stage-list{display:flex;flex-direction:column;gap:9px}.stage-btn{width:100%;text-align:left;border:1px solid #29465d;background:#0a1c2c;color:var(--text);padding:12px;border-radius:11px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:.2s}
+.stage-btn:hover,.stage-btn.active{border-color:var(--cyan);background:#12334a}.stage-btn.active{box-shadow:0 0 18px #16cce333}
+.stage-number{width:30px;height:30px;flex-shrink:0;border-radius:9px;background:#1a3850;display:grid;place-items:center;font-size:12px}.stage-btn.active .stage-number{background:#13bcd0;color:#031522}
+.stage-name{font-size:12px;font-weight:bold}.stage-sub{font-size:10px;color:#91afc3;margin-top:4px}
+.right{display:flex;flex-direction:column;gap:17px}.viewer{position:relative;overflow:hidden;min-height:465px;border-radius:17px;border:1px solid #24506c;background:radial-gradient(ellipse at 50% 72%,#15507988,transparent 55%),linear-gradient(160deg,#0c2941,#061321 75%)}
+.viewer-top{position:absolute;z-index:10;top:15px;left:17px;right:17px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.view-label{font-size:11px;background:#071b2be8;padding:8px 11px;border:1px solid #31536a;border-radius:8px}.view-label span{color:var(--cyan)}
+.scene{height:465px;position:relative;display:flex;justify-content:center;align-items:center;overflow:hidden;perspective:1000px}
+.scene-grid{position:absolute;bottom:35px;width:95%;height:140px;background-image:linear-gradient(#23618a35 1px,transparent 1px),linear-gradient(90deg,#23618a35 1px,transparent 1px);background-size:28px 28px;transform:perspective(400px) rotateX(65deg);mask-image:linear-gradient(transparent,#000)}
+.glow{position:absolute;width:370px;height:180px;background:#08a6e933;filter:blur(65px);border-radius:50%;bottom:60px}
+.model-position{position:relative;width:340px;height:280px;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d;transform:rotateX(-9deg) rotateY(-17deg);transition:transform .55s;z-index:2}
+.tank-model{width:280px;height:205px;position:relative;transform-style:preserve-3d;filter:drop-shadow(0 22px 20px #0008)}
+.tank-front{position:absolute;left:0;top:35px;width:250px;height:165px;border:5px solid #8eabba;border-top:7px solid #c3d7e1;border-radius:8px 8px 15px 15px;background:linear-gradient(90deg,#1d3b50,#244b62 50%,#122e43);overflow:hidden;transform:translateZ(35px);box-shadow:inset 0 0 25px #0008}
+.tank-side{position:absolute;top:35px;left:250px;width:70px;height:165px;background:linear-gradient(90deg,#27485e,#10283b);border:4px solid #7895a6;border-left:0;border-radius:0 10px 12px 0;transform:rotateY(90deg) translateZ(35px);transform-origin:left center}
+.tank-top{position:absolute;top:0;left:0;width:250px;height:70px;background:linear-gradient(145deg,#9cb6c5,#456a80);border:4px solid #b3cbd7;border-radius:10px;transform:rotateX(90deg) translateZ(35px);transform-origin:bottom center;opacity:.95}
+.tank-top:after{content:"";position:absolute;inset:10px;border:2px solid #183b53;border-radius:5px;background:#17354a66}
+.water{position:absolute;bottom:0;left:0;right:0;height:70%;transition:height .6s,background 1s;overflow:hidden;border-radius:0 0 8px 8px}
+.water-surface{position:absolute;left:-10%;top:-5px;width:120%;height:13px;background:#ffffff55;border-radius:50%;animation:wave 2.8s ease-in-out infinite alternate}
+.water-flow{position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 22px,#ffffff12 23px 25px);animation:waterFlow 4s linear infinite}
+@keyframes wave{from{transform:translateX(-9px) scaleY(.8)}to{transform:translateX(10px) scaleY(1.2)}}
+@keyframes waterFlow{to{background-position:100px 0}}
+.tank-details{position:absolute;inset:0;pointer-events:none}.grate{position:absolute;left:16%;right:16%;top:12px;height:135px;display:flex;justify-content:space-around;z-index:4}
+.grate span{width:6px;height:100%;border-radius:4px;background:linear-gradient(90deg,#d2e0e6,#5a7b8d);box-shadow:2px 0 4px #0008}
+.blades{position:absolute;z-index:5;left:50%;top:47%;width:85px;height:85px;border:5px solid #b5d3df;border-radius:50%;transform:translate(-50%,-50%);animation:spin 4s linear infinite}
+.blades:before,.blades:after{content:"";position:absolute;left:34px;top:0;width:6px;height:70px;border-radius:5px;background:#d3e7ee}.blades:after{transform:rotate(90deg)}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.filter-layers{position:absolute;bottom:0;left:0;right:0;height:42%;z-index:4;background:repeating-linear-gradient(to bottom,#c5a66c 0 12px,#b4c9c8 12px 20px,#526d7d 20px 28px);opacity:.9}
+.uv-lights{position:absolute;top:10px;left:12%;right:12%;display:flex;justify-content:space-around;z-index:5}.uv-lights span{width:7px;height:110px;border-radius:10px;background:#a58cff;box-shadow:0 0 15px #9e7bff,0 0 28px #8761ff}
+.bubbles{position:absolute;inset:0;z-index:6;pointer-events:none}.bubble{position:absolute;bottom:0;width:7px;height:7px;border:1px solid #ffffffb5;background:#d4ffff55;border-radius:50%;animation:bubbleRise 3s linear infinite}
+@keyframes bubbleRise{from{transform:translateY(0);opacity:.8}to{transform:translateY(-145px);opacity:0}}
+.pipe{position:absolute;height:13px;width:100px;top:100px;left:-75px;background:linear-gradient(#b7d0dc,#426a80);border:2px solid #c2d7e1;border-radius:7px;box-shadow:0 4px 8px #0008}.pipe-right{left:245px;top:110px}.pipe:after{content:"";position:absolute;right:-7px;top:-5px;width:10px;height:18px;border-radius:4px;background:#8eacbd}
+.tank-caption{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#061726;border:1px solid #41657a;padding:8px 18px;border-radius:8px;font-size:12px;z-index:7}
+.viewer-controls{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;flex-wrap:wrap;gap:9px;z-index:12}
+.control{border:1px solid #3a6178;background:#0b263b;color:#dff8ff;padding:10px 14px;border-radius:9px;cursor:pointer;font-size:12px}.control:hover{background:#125174;border-color:var(--cyan)}.control:active{transform:scale(.97)}.control.primary{background:#087eaa;border-color:#27d8e8}.control:disabled{opacity:.4;cursor:not-allowed}
+.info-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:17px}.description h3{margin:0 0 9px;font-size:17px}.description p{color:#abc2d2;font-size:13px;line-height:1.6;margin:0}
+.progress-box{margin-top:17px}.progress-heading{display:flex;justify-content:space-between;font-size:11px;margin-bottom:8px;color:#b6d0df}.progress-track{height:8px;background:#1b354a;border-radius:10px;overflow:hidden}.progress-fill{height:100%;width:16.67%;background:linear-gradient(90deg,#087dca,#26e0df);border-radius:10px;transition:width .5s}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:17px}.metric{background:#071b2b;border:1px solid #24445b;border-radius:10px;padding:10px;min-width:0}.metric small{font-size:10px;color:#89a9bd}.metric strong{display:block;font-size:15px;color:#3bdbe8;margin-top:6px;overflow-wrap:anywhere}.metric em{font-size:9px;color:#819daf;font-style:normal}
+.note{font-size:10px;color:#7896aa;margin-top:12px;line-height:1.5}
+.math-dashboard{margin-top:25px;padding:22px}.math-dashboard h2{color:#36dce8;font-size:21px;margin:0 0 9px}.math-intro,.math-description{color:#9db8ca;font-size:13px;line-height:1.6}
+.math-module{margin-top:20px;padding:19px;border:1px solid #294d65;border-radius:14px;background:linear-gradient(145deg,#0a1e30,#102b40)}.math-module h3{color:#d9f8ff;font-size:16px;margin:0 0 14px}
+.math-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}.math-grid label{display:flex;flex-direction:column;gap:7px;color:#a9c8d9;font-size:12px}
+.math-grid input{width:100%;min-width:0;padding:11px;border:1px solid #31556d;border-radius:8px;background:#061725;color:#40dce9;font-size:14px;outline:none}.math-grid input:focus{border-color:#24d5e5;box-shadow:0 0 10px #20d9e833}
+.math-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:17px}.math-result{padding:13px;border-radius:10px;background:#061725;border:1px solid #25465c;min-width:0}.math-result small{display:block;color:#8daabd;font-size:10px;margin-bottom:8px}.math-result strong{color:#35dce8;font-size:clamp(13px,2vw,19px);overflow-wrap:anywhere}
+.equation{margin:15px 0;padding:13px;background:#071725;border-left:3px solid #1bc9df;border-radius:7px;color:#b8d8e8;font-size:12px;line-height:1.7;overflow-wrap:anywhere}.equation b{color:#40dce9}.equation p{margin:5px 0}.math-note{color:#809daf;font-size:11px;line-height:1.6;margin-top:17px}
+.chart-wrap{height:230px;margin-top:14px;padding:10px;background:#061725;border:1px solid #25465c;border-radius:10px}.chart-wrap canvas{width:100%;height:100%}
+.notice{padding:12px;border:1px solid #31556d;border-radius:9px;background:#071b2b;color:#a9c8d9;font-size:12px;line-height:1.5;margin-top:12px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.stage-list{display:grid;grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.math-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.math-results{grid-template-columns:1fr}.math-dashboard{padding:14px}.viewer,.scene{height:420px;min-height:420px}.model-position{transform:rotateX(-9deg) rotateY(-17deg) scale(.82)}}
+@media(max-width:430px){header{padding:14px 4%}.status{font-size:9px;padding:7px}.logo h1{font-size:16px}.stage-btn{padding:9px 7px;gap:7px}.stage-name{font-size:10px}.stage-sub{font-size:9px}.viewer,.scene{height:390px;min-height:390px}.model-position{transform:rotateX(-9deg) rotateY(-17deg) scale(.68)}.viewer-controls{gap:5px}.control{padding:9px 10px;font-size:11px}.math-grid{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
-
 <header>
-  <div class="logo">
-    <div class="logo-icon">💧</div>
-    <div>
-      <h1>AquaSim 3D Pro</h1>
-      <p>Simulador de tratamiento de aguas residuales</p>
-    </div>
-  </div>
-  <div class="status">● SISTEMA LISTO</div>
+  <div class="logo"><div class="logo-icon">💧</div><div><h1>AquaSim 3D Pro</h1><p>Simulador didáctico de tratamiento y gestión del agua</p></div></div>
+  <div class="status" id="systemStatus">● SISTEMA LISTO</div>
 </header>
-
 <main>
-
   <div class="intro">
     <h2>Recorrido interactivo del tratamiento</h2>
-    <p>Selecciona una etapa para visualizar su tanque, conocer el proceso y observar el cambio progresivo del agua.</p>
+    <p>Selecciona una etapa para visualizar su tanque, conocer el proceso y observar los indicadores ilustrativos del tratamiento.</p>
   </div>
-
   <div class="layout">
-
     <aside class="panel">
-      <h3>ETAPAS DEL TRATAMIENTO</h3>
-      <div class="stage-list" id="stageList"></div>
-      <p class="note">Selecciona una etapa para enfocar su tanque.</p>
+      <h3>ETAPAS DEL TRATAMIENTO</h3><div class="stage-list" id="stageList"></div>
+      <p class="note">Selecciona una etapa para enfocar su tanque. Usa «Simular» para recorrerlas automáticamente.</p>
     </aside>
-
     <section class="right">
-
       <div class="viewer">
-
-        <div class="viewer-top">
-          <div class="view-label">VISTA 3D · <span id="viewNumber">ETAPA 01</span></div>
-          <div class="view-label" id="waterLabel">Agua residual</div>
+        <div class="viewer-top"><div class="view-label">VISTA 3D · <span id="viewNumber">ETAPA 01</span></div><div class="view-label" id="waterLabel">Agua residual</div></div>
+        <div class="scene"><div class="scene-grid"></div><div class="glow"></div>
+          <div class="model-position" id="modelPosition"><div class="tank-model">
+            <div class="tank-top"></div><div class="tank-side"></div>
+            <div class="tank-front"><div class="water" id="water"><div class="water-surface"></div><div class="water-flow"></div></div><div class="tank-details" id="tankDetails"></div><div class="bubbles" id="bubbles"></div></div>
+            <div class="pipe"></div><div class="pipe pipe-right"></div>
+          </div><div class="tank-caption" id="tankCaption">Tanque de desbaste</div></div>
         </div>
-
-        <div class="scene">
-          <div class="scene-grid"></div>
-          <div class="glow"></div>
-
-          <div class="model-position" id="modelPosition">
-
-            <div class="tank-model">
-
-              <div class="tank-top"></div>
-              <div class="tank-side"></div>
-
-              <div class="tank-front">
-                <div class="water" id="water">
-                  <div class="water-surface"></div>
-                  <div class="water-flow"></div>
-                </div>
-
-                <div class="tank-details" id="tankDetails"></div>
-                <div class="bubbles" id="bubbles"></div>
-              </div>
-
-              <div class="pipe"></div>
-              <div class="pipe pipe-right"></div>
-
-            </div>
-
-            <div class="tank-caption" id="tankCaption">Tanque de desbaste</div>
-
-          </div>
-        </div>
-
         <div class="viewer-controls">
           <button class="control" id="previousButton" type="button">← Anterior</button>
           <button class="control primary" id="playButton" type="button">▶ Simular</button>
           <button class="control" id="nextButton" type="button">Siguiente →</button>
           <button class="control" id="resetButton" type="button">↺ Reiniciar</button>
         </div>
-
       </div>
-
       <div class="info-grid">
-
-        <div class="panel description">
-          <h3 id="stageTitle">1. Pretratamiento</h3>
-          <p id="stageDescription"></p>
-
-          <div class="progress-box">
-            <div class="progress-heading">
-              <span>Progreso del recorrido</span>
-              <span id="progressText">16.67%</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-          </div>
+        <div class="panel description"><h3 id="stageTitle">1. Pretratamiento</h3><p id="stageDescription"></p>
+          <div class="progress-box"><div class="progress-heading"><span>Progreso del recorrido</span><span id="progressText">16.67%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
         </div>
-
-        <div class="panel">
-          <h3>Indicadores ilustrativos</h3>
-
-          <div class="metrics">
-            <div class="metric">
-              <small>Turbidez</small>
-              <strong id="turbidity">Muy alta</strong>
-              <em>Aspecto visual</em>
-            </div>
-            <div class="metric">
-              <small>pH</small>
-              <strong id="ph">6.5</strong>
-              <em>Valor simulado</em>
-            </div>
-            <div class="metric">
-              <small>Claridad</small>
-              <strong id="clarity">Muy baja</strong>
-              <em>Estimación visual</em>
-            </div>
-          </div>
-
-          <p class="note">Los indicadores son valores didácticos de demostración, no mediciones reales.</p>
-        </div>
-
+        <div class="panel"><h3>Indicadores ilustrativos</h3><div class="metrics">
+          <div class="metric"><small>Turbidez</small><strong id="turbidity">Muy alta</strong><em>Aspecto visual</em></div>
+          <div class="metric"><small>pH</small><strong id="ph">6.5</strong><em>Valor simulado</em></div>
+          <div class="metric"><small>Claridad</small><strong id="clarity">Muy baja</strong><em>Estimación visual</em></div>
+        </div><p class="note">Los indicadores son valores didácticos de demostración, no mediciones reales ni resultados de laboratorio.</p></div>
       </div>
-
     </section>
   </div>
 
-  <!-- PANEL MATEMÁTICO -->
-
   <section class="panel math-dashboard" id="calculations">
-
     <h2>📐 Panel de cálculos hidráulicos</h2>
-    <p class="math-intro">Modifica las variables para calcular caudales, volúmenes, costos de operación y geometría de canales.</p>
+    <p class="math-intro">Modifica las variables para calcular caudales, volúmenes, costos, velocidad en tuberías y geometría de canales. Los resultados se actualizan al pulsar cada botón.</p>
 
     <div class="math-module">
-      <h3>1. Variables hidráulicas</h3>
-
+      <h3>1. Variables hidráulicas y volumen del tanque</h3>
       <div class="math-grid">
-        <label>Caudal (L/s)
-          <input id="flowRate" type="number" step="any" min="0" value="2.85">
-        </label>
-
-        <label>Cota inicial (m)
-          <input id="elevation1" type="number" step="any" value="12.50">
-        </label>
-
-        <label>Cota final (m)
-          <input id="elevation2" type="number" step="any" value="9.80">
-        </label>
-
-        <label>Largo del tanque (m)
-          <input id="tankLength" type="number" step="any" min="0" value="8.50">
-        </label>
-
-        <label>Ancho del tanque (m)
-          <input id="tankWidth" type="number" step="any" min="0" value="4.00">
-        </label>
-
-        <label>Profundidad del agua (m)
-          <input id="tankDepth" type="number" step="any" min="0" value="2.20">
-        </label>
+        <label>Caudal (L/s)<input id="flowRate" type="number" step="any" min="0" value="2.85"></label>
+        <label>Cota inicial (m)<input id="elevation1" type="number" step="any" value="12.50"></label>
+        <label>Cota final (m)<input id="elevation2" type="number" step="any" value="9.80"></label>
+        <label>Largo del tanque (m)<input id="tankLength" type="number" step="any" min="0" value="8.50"></label>
+        <label>Ancho del tanque (m)<input id="tankWidth" type="number" step="any" min="0" value="4.00"></label>
+        <label>Profundidad del agua (m)<input id="tankDepth" type="number" step="any" min="0" value="2.20"></label>
       </div>
-
       <button class="control primary" id="calculateHydraulicsButton" type="button">Calcular variables</button>
-
       <div class="math-results">
-        <div class="math-result">
-          <small>Caudal convertido</small>
-          <strong id="resultFlow">0.00285 m³/s</strong>
-        </div>
-        <div class="math-result">
-          <small>Volumen del tanque</small>
-          <strong id="resultVolume">74.80 m³</strong>
-        </div>
-        <div class="math-result">
-          <small>Diferencia de cotas</small>
-          <strong id="resultElevation">-2.70 m</strong>
-        </div>
+        <div class="math-result"><small>Caudal convertido</small><strong id="resultFlow">0.00285 m³/s</strong></div>
+        <div class="math-result"><small>Volumen del tanque</small><strong id="resultVolume">74.80 m³</strong></div>
+        <div class="math-result"><small>Diferencia de cotas</small><strong id="resultElevation">-2.70 m</strong></div>
       </div>
-
-      <div class="equation">
-        <b>Ecuaciones utilizadas</b>
-        <p>Q (m³/s) = Q (L/s) ÷ 1000</p>
-        <p>V = Largo × Ancho × Profundidad</p>
-        <p>ΔH = Cota final − Cota inicial</p>
-        <p id="flowConversion">Q = 2.85 ÷ 1000 = 0.00285 m³/s</p>
-      </div>
+      <div class="equation"><b>Ecuaciones utilizadas</b><p>Q (m³/s) = Q (L/s) ÷ 1000</p><p>V = Largo × Ancho × Profundidad</p><p>ΔH = Cota final − Cota inicial</p><p id="flowConversion">Q = 2.85 ÷ 1000 = 0.00285 m³/s</p></div>
     </div>
 
     <div class="math-module">
-      <h3>2. Modelo económico lineal</h3>
-      <p class="math-description">Proyección del costo mensual de operación según el volumen de agua tratado.</p>
-
+      <h3>2. Modelo económico lineal</h3><p class="math-description">Proyección didáctica del costo mensual de operación según el volumen de agua tratado.</p>
       <div class="math-grid">
-        <label>Tarifa por m³ (COP)
-          <input id="waterTariff" type="number" step="any" min="0" value="450">
-        </label>
-
-        <label>Cargo fijo mensual (COP)
-          <input id="fixedCost" type="number" step="any" min="0" value="250000">
-        </label>
-
-        <label>Días de operación al mes
-          <input id="operationDays" type="number" step="1" min="1" max="31" value="30">
-        </label>
+        <label>Tarifa por m³ (COP)<input id="waterTariff" type="number" step="any" min="0" value="450"></label>
+        <label>Cargo fijo mensual (COP)<input id="fixedCost" type="number" step="any" min="0" value="250000"></label>
+        <label>Días de operación al mes<input id="operationDays" type="number" step="1" min="1" max="31" value="30"></label>
       </div>
-
-      <div class="equation">
-        <b>Modelo lineal</b>
-        <p>Costo = Volumen × Tarifa + Cargo fijo</p>
-        <p>Volumen mensual = Caudal × 86.4 × días</p>
-        <p id="linearSubstitution">Costo mensual</p>
-      </div>
-
+      <div class="equation"><b>Modelo lineal</b><p>Costo = Volumen mensual × Tarifa + Cargo fijo</p><p>Volumen mensual (m³) = Caudal (L/s) × 86,4 × días</p><p id="linearSubstitution">Costo mensual = volumen mensual × tarifa + cargo fijo</p></div>
       <button class="control primary" id="calculateEconomicsButton" type="button">Calcular costo mensual</button>
-
       <div class="math-results">
-        <div class="math-result">
-          <small>Volumen mensual</small>
-          <strong id="monthlyVolume">7,394.40 m³</strong>
-        </div>
-        <div class="math-result">
-          <small>Costo variable</small>
-          <strong id="variableCost">$3,327,480</strong>
-        </div>
-        <div class="math-result">
-          <small>Costo total mensual</small>
-          <strong id="totalCost">$3,577,480</strong>
-        </div>
+        <div class="math-result"><small>Volumen mensual</small><strong id="monthlyVolume">7.394,40 m³</strong></div>
+        <div class="math-result"><small>Costo variable</small><strong id="variableCost">$3.327.480</strong></div>
+        <div class="math-result"><small>Costo total mensual</small><strong id="totalCost">$3.577.480</strong></div>
       </div>
+      <p class="math-note">La tarifa y el cargo fijo son valores de ejemplo modificables; no representan una tarifa oficial de Santa Marta.</p>
     </div>
 
     <div class="math-module">
-      <h3>3. Modelo geométrico cuadrático</h3>
-      <p class="math-description">Se representa la sección transversal de un canal trapezoidal. Su área depende de la profundidad del agua.</p>
-
+      <h3>3. Modelo geométrico cuadrático: canal trapezoidal</h3>
+      <p class="math-description">El área de la sección transversal de un canal trapezoidal se calcula con una función cuadrática de la profundidad.</p>
       <div class="math-grid">
-        <label>Base inferior b (m)
-          <input id="channelBase" type="number" step="any" min="0" value="0.60">
-        </label>
+        <label>Base inferior b (m)<input id="channelBase" type="number" step="any" min="0.001" value="0.60"></label>
+        <label>Pendiente lateral m<input id="channelSlope" type="number" step="any" min="0" value="1.00"></label>
+        <label>Profundidad y (m)<input id="channelDepth" type="number" step="any" min="0.001" value="0.80"></label>
+        <label>Área objetivo (m²)<input id="targetArea" type="number" step="any" min="0.001" value="1.12"></label>
+        <label>Pendiente del canal S (m/m)<input id="channelGradient" type="number" step="any" min="0" value="0.002"></label>
+        <label>Coeficiente de Manning n<input id="manningN" type="number" step="any" min="0.001" value="0.013"></label>
+      </div>
+      <button class="control primary" id="calculateChannelButton" type="button">Calcular canal</button>
+      <div class="math-results">
+        <div class="math-result"><small>Área transversal</small><strong id="channelArea">1,12 m²</strong></div>
+        <div class="math-result"><small>Profundidad para área objetivo</small><strong id="solvedDepth">0,80 m</strong></div>
+        <div class="math-result"><small>Caudal estimado Manning</small><strong id="manningFlow">1,00 m³/s</strong></div>
+      </div>
+      <div class="equation"><b>Modelo cuadrático y ecuación de Manning</b><p>A(y) = b × y + m × y²</p><p>Para despejar y: m × y² + b × y − Aobjetivo = 0</p><p>R = A / P; Q = (1/n) × A × R^(2/3) × S^(1/2)</p><p id="channelSubstitution">A = 0,60 × 0,80 + 1,00 × 0,80²</p></div>
+      <p class="math-note">Se usa la raíz positiva de la ecuación cuadrática. La ecuación de Manning entrega una estimación para flujo uniforme; requiere unidades coherentes y datos representativos del canal.</p>
+    </div>
 
-        <label>Pendiente lateral m
-          <input id="channelSlope" type="number" step="any" 
+    <div class="math-module">
+      <h3>4. Flujo en tubería y pérdida de carga</h3>
+      <p class="math-description">Estimación de velocidad y pérdida de carga por Darcy-Weisbach. Se utiliza un factor de fricción introducido por el usuario.</p>
+  
