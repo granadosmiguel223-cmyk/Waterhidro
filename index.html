@@ -3,362 +3,189 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AquaSim 3D Pro</title>
 
 <style>
 *{box-sizing:border-box}
-
 body{
-  margin:0;
-  background:#071321;
-  color:#e8f7ff;
-  font-family:Arial,sans-serif;
+  margin:0;background:#071321;color:#e8f7ff;
+  font-family:Arial,sans-serif
 }
-
-header{
-  padding:20px;
-  background:#0c1e32;
-  border-bottom:1px solid #1c526c;
-}
-
-header h1{
-  margin:0;
-  color:#32d5ee;
-  font-size:26px;
-}
-
-header p{
-  margin:7px 0 0;
-  color:#a8c7d8;
-}
-
-main{
-  max-width:1200px;
-  margin:auto;
-  padding:16px;
-}
-
+header{padding:20px;background:#0c1e32;border-bottom:1px solid #20516b}
+header h1{margin:0;color:#39d5ef}
+header p{color:#b5cedc;margin-bottom:0}
+main{max-width:1200px;margin:auto;padding:15px}
 .panel{
-  background:#10283c;
-  border:1px solid #20516b;
-  border-radius:13px;
-  padding:16px;
-  margin-bottom:17px;
+  background:#10283c;border:1px solid #20516b;
+  border-radius:13px;padding:16px;margin-bottom:16px
 }
-
-h2{
-  color:#39d5ef;
-  margin-top:0;
-}
-
+h2{color:#39d5ef;margin-top:0}
 #visor{
-  width:100%;
-  height:490px;
-  overflow:hidden;
-  position:relative;
-  background:
-    radial-gradient(ellipse at center,#183b50 0%,#0b1c2d 70%);
-  border:1px solid #28617b;
-  border-radius:12px;
-  perspective:1000px;
+  height:490px;position:relative;overflow:hidden;
+  border-radius:12px;border:1px solid #28617b;
+  background:radial-gradient(ellipse at center,#193b50,#071522 75%);
 }
-
-#scene{
-  position:absolute;
-  width:950px;
-  height:390px;
-  left:50%;
-  top:50%;
-  margin-left:-475px;
-  margin-top:-195px;
-  transform-style:preserve-3d;
-  transform:
-    scale(var(--zoom,0.85))
-    rotateX(var(--rx,58deg))
-    rotateZ(var(--rz,-18deg));
-  transition:transform .25s ease;
+#world{
+  position:absolute;left:50%;top:50%;
+  width:940px;height:390px;margin-left:-470px;margin-top:-195px;
+  transform:scale(.78);
+  transform-origin:center center;
+  transition:transform .25s;
 }
-
-#ground{
-  position:absolute;
-  width:950px;
-  height:390px;
-  left:0;
-  top:0;
-  background:
-    linear-gradient(90deg,transparent 49%,#28516a22 50%,transparent 51%),
-    linear-gradient(transparent 49%,#28516a22 50%,transparent 51%);
-  background-size:45px 45px;
-  background-color:#102d40;
+#floor{
+  position:absolute;inset:0;
+  background-color:#15364a;
+  background-image:
+    linear-gradient(#ffffff0b 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff0b 1px,transparent 1px);
+  background-size:35px 35px;
   border:2px solid #31566a;
-  transform:translateZ(-12px);
-  box-shadow:0 25px 40px #0008;
+  transform:rotateX(55deg) rotateZ(-18deg) scale(1.05);
+  box-shadow:0 20px 40px #0008;
 }
-
+.plant{
+  position:absolute;inset:0;
+  transform:rotateX(0deg);
+}
 .tank{
-  position:absolute;
-  width:150px;
-  height:125px;
-  transform-style:preserve-3d;
-}
-
-.tank .water{
-  position:absolute;
-  left:9px;
-  top:9px;
-  width:132px;
-  height:107px;
-  transform:translateZ(20px);
-  border:3px solid #8ba9b8;
-  background:#854d0e;
+  position:absolute;width:155px;height:170px;
+  top:105px;
+  border:5px solid #8da8b7;
+  border-top:7px solid #b5cbd5;
+  border-radius:9px 9px 18px 18px;
+  background:linear-gradient(90deg,#526e7d,#253f50 12%,#405c6b 90%,#1c3546);
+  box-shadow:8px 12px 15px #0008,inset 0 0 15px #0008;
   overflow:hidden;
-  transition:background 1s ease;
-  box-shadow:inset 0 0 18px #ffffff25;
 }
-
-.water::before{
-  content:"";
-  position:absolute;
-  inset:-30%;
-  background:
-    repeating-linear-gradient(
-      110deg,
-      transparent 0 16px,
-      #ffffff22 17px 19px,
-      transparent 20px 34px
-    );
-  animation:wave 5s linear infinite;
+.tank:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:12px;
+  background:linear-gradient(#d4e2e8,#6c8796);
+  z-index:5;
 }
-
-.water::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,#ffffff35,transparent 55%);
+.tank:after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:13px;
+  background:#233e50;border-top:2px solid #8ba6b5;z-index:4
 }
-
-@keyframes wave{
-  from{transform:translateX(-30px)}
-  to{transform:translateX(30px)}
-}
-
-.wall{
-  position:absolute;
-  background:linear-gradient(145deg,#8ba2b0,#405969);
-  border:2px solid #a6bdc9;
-  box-shadow:inset 0 0 8px #ffffff20;
-}
-
-.wall.front{
-  width:150px;
-  height:20px;
-  left:0;
-  top:125px;
-  transform-origin:top;
-  transform:rotateX(-90deg);
-}
-
-.wall.back{
-  width:150px;
-  height:20px;
-  left:0;
-  top:0;
-  transform-origin:bottom;
-  transform:rotateX(90deg);
-}
-
-.wall.left{
-  width:20px;
-  height:125px;
-  left:0;
-  top:0;
-  transform-origin:left;
-  transform:rotateY(-90deg);
-}
-
-.wall.right{
-  width:20px;
-  height:125px;
-  left:150px;
-  top:0;
-  transform-origin:left;
-  transform:rotateY(90deg);
-}
-
 .tank-label{
-  position:absolute;
-  left:0;
-  top:-38px;
-  width:150px;
-  text-align:center;
-  color:#65e8ff;
-  font-weight:bold;
-  font-size:14px;
-  text-shadow:0 2px 5px #000;
-  transform:translateZ(35px);
+  position:absolute;top:-32px;left:-5px;width:155px;
+  text-align:center;color:#6cecff;font-weight:bold;
+  font-size:13px;text-shadow:0 2px 5px black
 }
-
+.water{
+  position:absolute;left:7px;right:7px;bottom:12px;
+  height:105px;border-radius:3px 3px 12px 12px;
+  background:linear-gradient(180deg,#b67b28,#71400d);
+  transition:background 1s,height .5s;
+  overflow:hidden;
+  box-shadow:inset 0 8px 12px #ffffff22;
+}
+.surface{
+  position:absolute;left:-3%;top:-7px;width:106%;height:19px;
+  border-radius:50%;
+  background:linear-gradient(180deg,#ffffff66,#ffffff10);
+  border-bottom:2px solid #ffffff55;
+  animation:ripple 3s ease-in-out infinite alternate;
+}
+@keyframes ripple{from{transform:translateX(-3px)}to{transform:translateX(5px)}}
+.water-particle{
+  position:absolute;width:5px;height:5px;border-radius:50%;
+  background:#ffffffa8;box-shadow:0 0 5px #c9faff;
+  animation:float 3s infinite ease-in-out;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0);opacity:.3}
+  50%{transform:translateY(-28px);opacity:1}
+}
+.tank-detail{
+  position:absolute;z-index:3;bottom:14px;left:10px;
+  color:#ffffffc9;font-size:10px;text-shadow:0 1px 3px #000
+}
+.grate{
+  position:absolute;z-index:3;top:27px;left:14px;
+  width:25px;height:90px;
+  background:repeating-linear-gradient(90deg,#a8bbc5 0 3px,#344c5a 3px 7px);
+  border:2px solid #b7cbd4;
+}
+.mixer{
+  position:absolute;z-index:3;top:30px;left:50%;
+  width:5px;height:100px;background:#c4d6df;
+}
+.mixer:after{
+  content:"";position:absolute;bottom:0;left:-22px;
+  width:48px;height:7px;background:#c4d6df;border-radius:5px
+}
+.filter-layers{
+  position:absolute;z-index:3;bottom:15px;left:10px;right:10px;
+  height:32px;
+  background:repeating-linear-gradient(
+    180deg,#d0b78a 0 8px,#806e50 8px 12px,
+    #a2b9bd 12px 19px,#536d7b 19px 23px
+  );
+  opacity:.9
+}
+.uv{
+  position:absolute;z-index:3;top:37px;left:15px;right:15px;
+  height:7px;background:#45eaff;
+  box-shadow:0 0 12px #25dfff,0 0 25px #25dfff
+}
 .pipe{
-  position:absolute;
-  height:13px;
-  width:90px;
-  background:linear-gradient(#9eb9c7,#36576a,#8da9b8);
-  border-radius:10px;
-  border:2px solid #9bb8c7;
-  transform:translateZ(18px);
-  box-shadow:0 4px 7px #0008;
+  position:absolute;top:190px;height:15px;
+  background:linear-gradient(#b8cbd3,#405c6e,#8ca6b5);
+  border:2px solid #b4c8d2;border-radius:10px;
+  box-shadow:0 5px 8px #0008
 }
-
-.pipe::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:3px;
-  height:3px;
-  background:#38c8e8;
-  border-radius:5px;
+.pipe:after{
+  content:"";position:absolute;left:0;right:0;top:4px;
+  height:3px;background:#36d7f1;border-radius:5px
 }
-
-.particle{
-  position:absolute;
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#9ef4ff;
-  box-shadow:0 0 9px #4deaff;
-  transform:translateZ(29px);
-  pointer-events:none;
+.flow-dot{
+  position:absolute;top:193px;width:9px;height:9px;
+  border-radius:50%;background:#9af7ff;
+  box-shadow:0 0 10px #39d5ef;z-index:8
 }
-
-.bubble{
-  position:absolute;
-  width:7px;
-  height:7px;
-  border:1px solid #b8f7ff;
-  border-radius:50%;
-  background:#ffffff44;
-  animation:rise 2s infinite ease-in;
+#caption{
+  position:absolute;bottom:12px;left:12px;
+  background:#071321dc;padding:9px 12px;border-radius:7px;
+  color:#c9e8f3;font-size:12px
 }
-
-@keyframes rise{
-  0%{transform:translateY(20px);opacity:0}
-  30%{opacity:1}
-  100%{transform:translateY(-65px);opacity:0}
-}
-
-#legend{
-  position:absolute;
-  left:12px;
-  bottom:12px;
-  padding:9px 12px;
-  border-radius:8px;
-  background:#071321dd;
-  color:#c8e3f0;
-  font-size:12px;
-}
-
-.controls{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:13px;
-}
-
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
 button{
-  padding:11px 15px;
-  border:0;
-  border-radius:8px;
-  background:#087f91;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
+  border:0;border-radius:8px;padding:11px 15px;
+  color:white;background:#087f91;font-weight:bold;cursor:pointer
 }
-
 button:hover{background:#00a9b8}
 button.secondary{background:#24465e}
-button.secondary:hover{background:#326580}
-
-input[type=range]{
-  width:100%;
-  accent-color:#20c9e0;
-}
-
-label{
-  display:block;
-  margin:13px 0 7px;
-  color:#b8d7e5;
-}
-
-.stages{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:11px;
-}
-
-.stage{
-  padding:14px;
-  border:1px solid #27556d;
-  background:#0b1d2d;
-  border-radius:9px;
-  cursor:pointer;
-}
-
-.stage.active{
-  border-color:#39d5ef;
-  background:#153b50;
-}
-
-.stage h3{
-  color:#39d5ef;
-  margin:0 0 8px;
-}
-
-.stage p{
-  color:#b5cedc;
-  font-size:14px;
-  margin:0;
-}
-
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-  gap:10px;
-}
-
-.metric{
-  padding:14px;
-  border-radius:9px;
-  background:#0b1d2d;
-  border:1px solid #27556d;
-}
-
-.metric strong{
-  display:block;
-  margin-top:7px;
-  font-size:23px;
-  color:#39d5ef;
-}
-
+button.active{background:#00a896}
+input[type=range]{width:100%;accent-color:#24d3e8}
+label{display:block;color:#bdd7e4;margin:12px 0 6px}
 small{color:#a9c4d2}
-
-footer{
-  text-align:center;
-  padding:18px;
-  color:#789aaa;
+.stages,.metrics,.sim-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px
 }
-
+.stage,.metric,.sim-card{
+  padding:14px;border-radius:9px;background:#0b1d2d;
+  border:1px solid #27556d
+}
+.stage{cursor:pointer}
+.stage.active{border-color:#39d5ef;background:#153b50}
+.stage h3{color:#39d5ef;margin:0 0 8px}
+.stage p{font-size:14px;color:#b5cedc;margin:0}
+.metric strong{
+  display:block;color:#39d5ef;font-size:23px;margin-top:7px
+}
+.sim-card strong{display:block;color:#39d5ef;margin-bottom:6px}
+.sim-card p{font-size:13px;color:#b5cedc;line-height:1.5}
+#simulationStatus{color:#63e9f5;font-weight:bold}
+footer{text-align:center;padding:18px;color:#789aaa}
 @media(max-width:600px){
-  #visor{height:410px}
-  #scene{margin-left:-475px}
-  header h1{font-size:22px}
+  #visor{height:400px}
+  #world{transform:scale(.55)}
 }
 </style>
 </head>
 
 <body>
-
 <header>
   <h1>AquaSim 3D Pro</h1>
   <p>Simulador interactivo para el tratamiento y reúso de aguas residuales</p>
@@ -367,395 +194,384 @@ footer{
 <main>
 
 <section class="panel">
-  <h2>Visualización tridimensional de la planta</h2>
-
+  <h2>Planta de tratamiento · Modelo 3D</h2>
   <div id="visor">
-    <div id="scene">
-      <div id="ground"></div>
-      <div id="tanks"></div>
-      <div id="pipes"></div>
-      <div id="particles"></div>
-    </div>
+    <div id="world">
+      <div id="floor"></div>
+      <div class="plant" id="plant">
 
-    <div id="legend">
-      Agua residual → Agua tratada
+        <div class="pipe" style="left:165px;width:55px"></div>
+        <div class="pipe" style="left:385px;width:55px"></div>
+        <div class="pipe" style="left:605px;width:55px"></div>
+
+        <div class="tank" style="left:15px">
+          <div class="tank-label">1 · PRETRATAMIENTO</div>
+          <div class="grate"></div>
+          <div class="water" id="water0">
+            <div class="surface"></div>
+          </div>
+          <div class="tank-detail">Retención de sólidos</div>
+        </div>
+
+        <div class="tank" style="left:235px">
+          <div class="tank-label">2 · SEDIMENTACIÓN</div>
+          <div class="water" id="water1">
+            <div class="surface"></div>
+          </div>
+          <div class="tank-detail">Separación de partículas</div>
+        </div>
+
+        <div class="tank" style="left:455px">
+          <div class="tank-label">3 · BIOLOGÍA</div>
+          <div class="mixer"></div>
+          <div class="water" id="water2">
+            <div class="surface"></div>
+          </div>
+          <div class="tank-detail">Aireación biológica</div>
+        </div>
+
+        <div class="tank" style="left:675px">
+          <div class="tank-label">4 · FILTRACIÓN</div>
+          <div class="uv"></div>
+          <div class="water" id="water3">
+            <div class="surface"></div>
+          </div>
+          <div class="filter-layers"></div>
+          <div class="tank-detail">Filtración y desinfección</div>
+        </div>
+
+        <div id="flowDots"></div>
+      </div>
     </div>
+    <div id="caption">Vista de la planta completa · Agua almacenada en tanques</div>
   </div>
 
   <div class="controls">
-    <button id="start">▶ Iniciar</button>
+    <button id="start">▶ Iniciar simulación</button>
     <button id="pause" class="secondary">Ⅱ Pausar</button>
     <button id="reset" class="secondary">↻ Reiniciar</button>
     <button id="general" class="secondary">Vista general</button>
-    <button id="rotate" class="secondary">Girar vista</button>
     <button id="zoomIn" class="secondary">＋ Acercar</button>
     <button id="zoomOut" class="secondary">－ Alejar</button>
   </div>
 
-  <label for="progress">Avance del tratamiento</label>
+  <label for="progress">Avance de la simulación</label>
   <input id="progress" type="range" min="0" max="100" value="0">
-  <small>Desliza para observar cómo cambia el agua durante las etapas.</small>
+  <small>También puedes mover el control para observar cada etapa.</small>
 </section>
 
 <section class="panel">
   <h2>Etapas del tratamiento</h2>
-
   <div class="stages">
     <div class="stage active" data-stage="0">
       <h3>1. Pretratamiento</h3>
-      <p>Retención de residuos sólidos y materiales de gran tamaño.</p>
+      <p>El agua entra al tanque y se retienen residuos grandes mediante rejillas.</p>
     </div>
-
     <div class="stage" data-stage="1">
       <h3>2. Sedimentación</h3>
-      <p>Separación de partículas suspendidas mediante gravedad.</p>
+      <p>Las partículas suspendidas se separan y se depositan en el fondo.</p>
     </div>
-
     <div class="stage" data-stage="2">
       <h3>3. Tratamiento biológico</h3>
-      <p>Acción de microorganismos y aireación del agua.</p>
+      <p>Los microorganismos ayudan a reducir la materia orgánica.</p>
     </div>
-
     <div class="stage" data-stage="3">
       <h3>4. Filtración y desinfección</h3>
-      <p>Retención de partículas pequeñas y desinfección del agua.</p>
+      <p>Se retienen partículas finas y se realiza una desinfección final.</p>
     </div>
   </div>
+  <p id="stageDescription">El agua residual ingresa al sistema y pasa por las rejillas de retención.</p>
 </section>
 
 <section class="panel">
-  <h2>Indicadores del agua</h2>
+  <h2>Simulación del tratamiento</h2>
+  <p>Modifica los parámetros y observa cómo cambia el proceso en el modelo.</p>
 
-  <div class="metrics">
-    <div class="metric">pH<strong id="ph">6.2</strong></div>
-    <div class="metric">Turbidez<strong id="turbidity">180 NTU</strong></div>
-    <div class="metric">Eficiencia<strong id="efficiency">0%</strong></div>
-    <div class="metric">Estado<strong id="status">Inicial</strong></div>
+  <div class="sim-grid">
+    <div class="sim-card">
+      <strong>Caudal de entrada</strong>
+      <p>Volumen de agua que ingresa por segundo.</p>
+      <label for="flow">Caudal (L/s): <span id="flowValue">40</span></label>
+      <input id="flow" type="range" min="5" max="100" value="40">
+    </div>
+
+    <div class="sim-card">
+      <strong>Velocidad del proceso</strong>
+      <p>Controla la rapidez con la que avanza la simulación.</p>
+      <label for="speed">Velocidad: <span id="speedValue">1x</span></label>
+      <input id="speed" type="range" min="1" max="5" value="1">
+    </div>
   </div>
 
-  <label for="flow">Caudal de entrada (L/s)</label>
-  <input id="flow" type="range" min="5" max="100" value="40">
-  <small>Caudal seleccionado: <span id="flowValue">40</span> L/s</small>
+  <div class="controls">
+    <button id="runSimulation">▶ Ejecutar simulación</button>
+    <button id="resetSimulation" class="secondary">Restablecer parámetros</button>
+  </div>
+
+  <p>Estado: <span id="simulationStatus">Preparado para iniciar</span></p>
 </section>
 
-<footer>
-  AquaSim 3D Pro · Simulación educativa
-</footer>
+<section class="panel">
+  <h2>Indicadores del proceso</h2>
+  <div class="metrics">
+    <div class="metric">pH estimado<strong id="ph">6.2</strong></div>
+    <div class="metric">Turbidez estimada<strong id="turbidity">180 NTU</strong></div>
+    <div class="metric">Avance<strong id="efficiency">0%</strong></div>
+    <div class="metric">Etapa actual<strong id="currentStage">Inicial</strong></div>
+  </div>
+  <small>Los valores son ilustrativos y no representan mediciones reales de una PTAR.</small>
+</section>
 
+<footer>AquaSim 3D Pro · Simulación educativa</footer>
 </main>
 
 <script>
 "use strict";
 
-/* ELEMENTOS PRINCIPALES */
+/* ESTADO DE LA SIMULACIÓN */
 
-const scene = document.getElementById("scene");
-const tanksContainer = document.getElementById("tanks");
-const pipesContainer = document.getElementById("pipes");
-const particlesContainer = document.getElementById("particles");
+let progress=0;
+let running=false;
+let zoom=0.78;
+let speed=1;
+let lastTime=0;
+let dotElements=[];
 
-const stages = [
+const stageNames=[
   "Pretratamiento",
   "Sedimentación",
   "Tratamiento biológico",
   "Filtración y desinfección"
 ];
 
-const positions = [65, 295, 525, 755];
-
-const colors = [
-  [133,77,14],
-  [190,137,30],
-  [8,127,188],
-  [41,217,220]
+const descriptions=[
+  "El agua residual ingresa al sistema y pasa por las rejillas que retienen residuos grandes.",
+  "El agua permanece en el tanque para permitir que las partículas suspendidas se depositen.",
+  "Se incorpora aire al agua para favorecer la actividad de microorganismos que degradan materia orgánica.",
+  "El agua atraviesa los medios filtrantes y recibe una etapa final de desinfección."
 ];
 
-let progress = 0;
-let running = false;
-let zoom = 0.85;
-let rotation = -18;
-let lastFrame = 0;
-let particles = [];
+const colors=[
+  [135,77,19],
+  [184,133,39],
+  [18,125,180],
+  [37,211,218]
+];
 
-/* CREAR TANQUES */
+const waterIds=["water0","water1","water2","water3"];
+const world=document.getElementById("world");
 
-function createTank(index){
+/* INTERPOLACIÓN DE COLOR */
 
-  const tank = document.createElement("div");
-  tank.className = "tank";
-  tank.style.left = positions[index] + "px";
-  tank.style.top = "130px";
+function colorAt(position){
+  position=Math.max(0,Math.min(3,position));
+  const index=Math.min(2,Math.floor(position));
+  const fraction=position-index;
 
-  const names = ["ENTRADA","SEDIMENTACIÓN","BIOLOGÍA","AGUA TRATADA"];
+  const a=colors[index];
+  const b=colors[index+1];
 
-  tank.innerHTML = `
-    <div class="tank-label">${names[index]}</div>
-    <div class="water" id="water${index}">
-      ${index===2 ? `
-        <div class="bubble" style="left:20%;animation-delay:0s"></div>
-        <div class="bubble" style="left:45%;animation-delay:.6s"></div>
-        <div class="bubble" style="left:70%;animation-delay:1.1s"></div>
-      ` : ""}
-    </div>
-    <div class="wall front"></div>
-    <div class="wall back"></div>
-    <div class="wall left"></div>
-    <div class="wall right"></div>
-  `;
-
-  tanksContainer.appendChild(tank);
+  return "rgb("+a.map((v,i)=>
+    Math.round(v+(b[i]-v)*fraction)
+  ).join(",")+")";
 }
 
-/* CREAR TUBERÍAS */
+/* COLOR Y NIVEL DE AGUA EN CADA TANQUE */
 
-function createPipe(left,top,width){
-  const pipe = document.createElement("div");
-  pipe.className = "pipe";
-  pipe.style.left = left+"px";
-  pipe.style.top = top+"px";
-  pipe.style.width = width+"px";
-  pipesContainer.appendChild(pipe);
-}
-
-/* CREAR PARTÍCULAS */
-
-function createParticles(){
-
-  for(let i=0;i<24;i++){
-
-    const p = document.createElement("div");
-    p.className = "particle";
-
-    particlesContainer.appendChild(p);
-
-    particles.push({
-      element:p,
-      offset:i/24
-    });
-  }
-}
-
-/* INTERPOLACIÓN DE COLORES */
-
-function getColor(position){
-
-  const value = Math.max(0,Math.min(3,position));
-  const index = Math.min(2,Math.floor(value));
-  const fraction = value-index;
-
-  const a = colors[index];
-  const b = colors[index+1];
-
-  const r = Math.round(a[0]+(b[0]-a[0])*fraction);
-  const g = Math.round(a[1]+(b[1]-a[1])*fraction);
-  const bl = Math.round(a[2]+(b[2]-a[2])*fraction);
-
-  return `rgb(${r},${g},${bl})`;
-}
-
-/* ACTUALIZAR EL COLOR DEL AGUA */
-
-function updateWater(){
-
+function updateTanks(){
   for(let i=0;i<4;i++){
+    const position=Math.max(0,Math.min(3,progress/100*3-(3-i)));
+    const water=document.getElementById(waterIds[i]);
 
-    /*
-      El agua avanza progresivamente por los cuatro tanques.
-      Cada tanque representa una fase del tratamiento.
-    */
+    water.style.background=
+      "linear-gradient(180deg,"+
+      colorAt(position)+
+      ","+
+      colorAt(Math.max(0,position-0.35))+
+      ")";
 
-    const waterPosition = Math.max(
-      0,
-      Math.min(3,progress/100*3-(3-i))
-    );
-
-    document.getElementById("water"+i).style.background =
-      getColor(waterPosition);
+    /* El nivel de agua sube y se mantiene almacenado */
+    const level=75+Math.min(25,position*8);
+    water.style.height=level+"px";
   }
 }
 
-/* ACTUALIZAR INDICADORES */
+/* INDICADORES */
 
 function updateIndicators(){
+  const index=Math.min(3,Math.floor(progress/100*3));
 
-  const stage = Math.min(3,Math.floor(progress/100*3));
-
-  document.getElementById("ph").textContent =
+  document.getElementById("ph").textContent=
     (6.2+progress*0.017).toFixed(1);
 
-  document.getElementById("turbidity").textContent =
+  document.getElementById("turbidity").textContent=
     Math.round(180-progress*1.72)+" NTU";
 
-  document.getElementById("efficiency").textContent =
+  document.getElementById("efficiency").textContent=
     Math.round(progress*0.94)+"%";
 
-  document.getElementById("status").textContent =
-    progress===100 ? "Finalizado" : stages[stage];
+  document.getElementById("currentStage").textContent=
+    progress===100?"Finalizado":stageNames[index];
 
-  document.querySelectorAll(".stage").forEach((element,index)=>{
-    element.classList.toggle("active",index===stage);
+  document.getElementById("stageDescription").textContent=
+    descriptions[index];
+
+  document.querySelectorAll(".stage").forEach((element,i)=>{
+    element.classList.toggle("active",i===index);
   });
 }
 
-/* ACTUALIZAR SIMULACIÓN */
+/* PROGRESO */
 
 function setProgress(value){
-
-  progress = Math.max(0,Math.min(100,Number(value)));
-
-  document.getElementById("progress").value = progress;
-
-  updateWater();
+  progress=Math.max(0,Math.min(100,Number(value)));
+  document.getElementById("progress").value=progress;
+  updateTanks();
   updateIndicators();
 }
 
-/* ANIMACIÓN DE PARTÍCULAS */
+/* PARTÍCULAS DE FLUJO ENTRE TANQUES */
 
-function animateParticles(time){
+function createFlowDots(){
+  const container=document.getElementById("flowDots");
 
-  particles.forEach((particle)=>{
+  for(let i=0;i<15;i++){
+    const dot=document.createElement("div");
+    dot.className="flow-dot";
+    container.appendChild(dot);
+    dotElements.push({element:dot,offset:i/15});
+  }
+}
 
-    const movement = ((time*0.000035)+particle.offset)%1;
-
-    const x = 15 + movement*920;
-    const y = 190 + Math.sin(time*0.002+particle.offset*20)*12;
-
-    particle.element.style.left = x+"px";
-    particle.element.style.top = y+"px";
+function animateDots(time){
+  dotElements.forEach(dot=>{
+    const t=((time*0.000025*speed)+dot.offset)%1;
+    dot.element.style.left=(155+t*630)+"px";
+    dot.element.style.opacity=running?"1":"0.45";
   });
 }
 
-/* BUCLE DE ANIMACIÓN */
+/* ANIMACIÓN PRINCIPAL */
 
 function animate(time){
-
   requestAnimationFrame(animate);
 
-  if(!lastFrame)lastFrame=time;
-
-  const delta=Math.min((time-lastFrame)/1000,0.05);
-  lastFrame=time;
+  if(!lastTime)lastTime=time;
+  const delta=Math.min((time-lastTime)/1000,0.05);
+  lastTime=time;
 
   if(running){
-
-    setProgress(progress+delta*3.5);
+    setProgress(progress+delta*3.5*speed);
 
     if(progress>=100){
       running=false;
+      document.getElementById("simulationStatus").textContent=
+        "Tratamiento finalizado";
     }
   }
 
-  animateParticles(time);
+  animateDots(time);
 }
 
-/* CONTROLES DE SIMULACIÓN */
+/* BOTONES */
 
 document.getElementById("start").addEventListener("click",()=>{
-
   if(progress>=100)setProgress(0);
-
   running=true;
+  document.getElementById("simulationStatus").textContent=
+    "Tratamiento en ejecución";
+});
+
+document.getElementById("runSimulation").addEventListener("click",()=>{
+  if(progress>=100)setProgress(0);
+  running=true;
+  document.getElementById("simulationStatus").textContent=
+    "Simulación ejecutándose";
 });
 
 document.getElementById("pause").addEventListener("click",()=>{
   running=false;
+  document.getElementById("simulationStatus").textContent=
+    "Simulación pausada";
 });
 
 document.getElementById("reset").addEventListener("click",()=>{
   running=false;
   setProgress(0);
+  document.getElementById("simulationStatus").textContent=
+    "Simulación reiniciada";
 });
 
-document.getElementById("progress").addEventListener("input",(event)=>{
+document.getElementById("resetSimulation").addEventListener("click",()=>{
   running=false;
-  setProgress(event.target.value);
+  document.getElementById("flow").value=40;
+  document.getElementById("flowValue").textContent=40;
+  document.getElementById("speed").value=1;
+  document.getElementById("speedValue").textContent="1x";
+  speed=1;
+  setProgress(0);
+  document.getElementById("simulationStatus").textContent=
+    "Parámetros restablecidos";
+});
+
+document.getElementById("progress").addEventListener("input",e=>{
+  running=false;
+  setProgress(e.target.value);
+  document.getElementById("simulationStatus").textContent=
+    "Avance ajustado manualmente";
 });
 
 /* SELECCIÓN DE ETAPAS */
 
 document.querySelectorAll(".stage").forEach((element,index)=>{
-
   element.addEventListener("click",()=>{
-
     running=false;
-
     setProgress(index*100/3);
-
-    const center = positions[index]+75;
-
-    scene.style.setProperty("--rx","58deg");
-    scene.style.setProperty("--rz","-18deg");
-
-    scene.style.setProperty(
-      "transform",
-      `scale(${zoom}) rotateX(58deg) rotateZ(-18deg) translateX(${475-center}px)`
-    );
+    document.getElementById("simulationStatus").textContent=
+      "Visualizando: "+stageNames[index];
   });
-});
-
-/* VISTA GENERAL */
-
-document.getElementById("general").addEventListener("click",()=>{
-
-  zoom=0.85;
-  rotation=-18;
-
-  scene.style.transform =
-    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
-});
-
-/* GIRO DE LA VISTA */
-
-document.getElementById("rotate").addEventListener("click",()=>{
-
-  rotation-=25;
-
-  scene.style.transform =
-    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
-});
-
-/* ZOOM */
-
-document.getElementById("zoomIn").addEventListener("click",()=>{
-
-  zoom=Math.min(1.25,zoom+0.1);
-
-  scene.style.transform =
-    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
-});
-
-document.getElementById("zoomOut").addEventListener("click",()=>{
-
-  zoom=Math.max(0.55,zoom-0.1);
-
-  scene.style.transform =
-    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
 });
 
 /* CAUDAL */
 
-document.getElementById("flow").addEventListener("input",(event)=>{
+document.getElementById("flow").addEventListener("input",e=>{
+  document.getElementById("flowValue").textContent=e.target.value;
+});
 
-  document.getElementById("flowValue").textContent=event.target.value;
+/* VELOCIDAD */
+
+document.getElementById("speed").addEventListener("input",e=>{
+  speed=Number(e.target.value);
+  document.getElementById("speedValue").textContent=speed+"x";
+});
+
+/* ZOOM */
+
+function applyZoom(){
+  world.style.transform="scale("+zoom+")";
+}
+
+document.getElementById("zoomIn").addEventListener("click",()=>{
+  zoom=Math.min(1.05,zoom+0.08);
+  applyZoom();
+});
+
+document.getElementById("zoomOut").addEventListener("click",()=>{
+  zoom=Math.max(0.45,zoom-0.08);
+  applyZoom();
+});
+
+document.getElementById("general").addEventListener("click",()=>{
+  zoom=0.78;
+  applyZoom();
 });
 
 /* INICIAR */
 
-for(let i=0;i<4;i++){
-  createTank(i);
-}
-
-createPipe(205,190,90);
-createPipe(435,190,90);
-createPipe(665,190,90);
-
-createParticles();
-
+createFlowDots();
 setProgress(0);
-
 requestAnimationFrame(animate);
 
 </script>
-
 </body>
 </html>
