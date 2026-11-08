@@ -8,662 +8,754 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
+  background:#071321;
+  color:#e8f7ff;
   font-family:Arial,sans-serif;
-  background:#060d18;
-  color:#e5f3fa;
 }
+
 header{
   padding:20px;
-  background:#0b172a;
-  border-bottom:1px solid #16445a;
+  background:#0c1e32;
+  border-bottom:1px solid #1c526c;
 }
-header h1{margin:0;color:#35d5ee}
-header p{margin:7px 0 0;color:#a9c5d5}
+
+header h1{
+  margin:0;
+  color:#32d5ee;
+  font-size:26px;
+}
+
+header p{
+  margin:7px 0 0;
+  color:#a8c7d8;
+}
+
 main{
-  max-width:1250px;
+  max-width:1200px;
   margin:auto;
-  padding:18px;
+  padding:16px;
 }
+
 .panel{
-  background:#102638;
-  border:1px solid #1c4a60;
+  background:#10283c;
+  border:1px solid #20516b;
   border-radius:13px;
   padding:16px;
-  margin-bottom:16px;
+  margin-bottom:17px;
 }
-h2{color:#38bdf8;margin-top:0}
+
+h2{
+  color:#39d5ef;
+  margin-top:0;
+}
+
 #visor{
   width:100%;
-  height:480px;
-  min-height:350px;
-  position:relative;
+  height:490px;
   overflow:hidden;
+  position:relative;
+  background:
+    radial-gradient(ellipse at center,#183b50 0%,#0b1c2d 70%);
+  border:1px solid #28617b;
   border-radius:12px;
-  background:#071522;
-  border:1px solid #246078;
+  perspective:1000px;
 }
-#visor canvas{
-  display:block;
-  width:100%;
-  height:100%;
+
+#scene{
+  position:absolute;
+  width:950px;
+  height:390px;
+  left:50%;
+  top:50%;
+  margin-left:-475px;
+  margin-top:-195px;
+  transform-style:preserve-3d;
+  transform:
+    scale(var(--zoom,0.85))
+    rotateX(var(--rx,58deg))
+    rotateZ(var(--rz,-18deg));
+  transition:transform .25s ease;
 }
-#mensaje{
+
+#ground{
+  position:absolute;
+  width:950px;
+  height:390px;
+  left:0;
+  top:0;
+  background:
+    linear-gradient(90deg,transparent 49%,#28516a22 50%,transparent 51%),
+    linear-gradient(transparent 49%,#28516a22 50%,transparent 51%);
+  background-size:45px 45px;
+  background-color:#102d40;
+  border:2px solid #31566a;
+  transform:translateZ(-12px);
+  box-shadow:0 25px 40px #0008;
+}
+
+.tank{
+  position:absolute;
+  width:150px;
+  height:125px;
+  transform-style:preserve-3d;
+}
+
+.tank .water{
+  position:absolute;
+  left:9px;
+  top:9px;
+  width:132px;
+  height:107px;
+  transform:translateZ(20px);
+  border:3px solid #8ba9b8;
+  background:#854d0e;
+  overflow:hidden;
+  transition:background 1s ease;
+  box-shadow:inset 0 0 18px #ffffff25;
+}
+
+.water::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    repeating-linear-gradient(
+      110deg,
+      transparent 0 16px,
+      #ffffff22 17px 19px,
+      transparent 20px 34px
+    );
+  animation:wave 5s linear infinite;
+}
+
+.water::after{
+  content:"";
   position:absolute;
   inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:linear-gradient(135deg,#ffffff35,transparent 55%);
+}
+
+@keyframes wave{
+  from{transform:translateX(-30px)}
+  to{transform:translateX(30px)}
+}
+
+.wall{
+  position:absolute;
+  background:linear-gradient(145deg,#8ba2b0,#405969);
+  border:2px solid #a6bdc9;
+  box-shadow:inset 0 0 8px #ffffff20;
+}
+
+.wall.front{
+  width:150px;
+  height:20px;
+  left:0;
+  top:125px;
+  transform-origin:top;
+  transform:rotateX(-90deg);
+}
+
+.wall.back{
+  width:150px;
+  height:20px;
+  left:0;
+  top:0;
+  transform-origin:bottom;
+  transform:rotateX(90deg);
+}
+
+.wall.left{
+  width:20px;
+  height:125px;
+  left:0;
+  top:0;
+  transform-origin:left;
+  transform:rotateY(-90deg);
+}
+
+.wall.right{
+  width:20px;
+  height:125px;
+  left:150px;
+  top:0;
+  transform-origin:left;
+  transform:rotateY(90deg);
+}
+
+.tank-label{
+  position:absolute;
+  left:0;
+  top:-38px;
+  width:150px;
   text-align:center;
-  padding:20px;
-  color:#a9c5d5;
+  color:#65e8ff;
+  font-weight:bold;
+  font-size:14px;
+  text-shadow:0 2px 5px #000;
+  transform:translateZ(35px);
+}
+
+.pipe{
+  position:absolute;
+  height:13px;
+  width:90px;
+  background:linear-gradient(#9eb9c7,#36576a,#8da9b8);
+  border-radius:10px;
+  border:2px solid #9bb8c7;
+  transform:translateZ(18px);
+  box-shadow:0 4px 7px #0008;
+}
+
+.pipe::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:3px;
+  height:3px;
+  background:#38c8e8;
+  border-radius:5px;
+}
+
+.particle{
+  position:absolute;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#9ef4ff;
+  box-shadow:0 0 9px #4deaff;
+  transform:translateZ(29px);
   pointer-events:none;
 }
+
+.bubble{
+  position:absolute;
+  width:7px;
+  height:7px;
+  border:1px solid #b8f7ff;
+  border-radius:50%;
+  background:#ffffff44;
+  animation:rise 2s infinite ease-in;
+}
+
+@keyframes rise{
+  0%{transform:translateY(20px);opacity:0}
+  30%{opacity:1}
+  100%{transform:translateY(-65px);opacity:0}
+}
+
+#legend{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  padding:9px 12px;
+  border-radius:8px;
+  background:#071321dd;
+  color:#c8e3f0;
+  font-size:12px;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:13px;
+}
+
 button{
-  background:#087f8c;
-  color:white;
+  padding:11px 15px;
   border:0;
   border-radius:8px;
-  padding:11px 16px;
-  margin:5px 5px 5px 0;
+  background:#087f91;
+  color:white;
   font-weight:bold;
   cursor:pointer;
 }
-button:hover{background:#00a896}
-button.secundario{background:#16445a}
-button.activo{background:#00a896}
-.controles{display:flex;flex-wrap:wrap;gap:5px}
-.estaciones{
+
+button:hover{background:#00a9b8}
+button.secondary{background:#24465e}
+button.secondary:hover{background:#326580}
+
+input[type=range]{
+  width:100%;
+  accent-color:#20c9e0;
+}
+
+label{
+  display:block;
+  margin:13px 0 7px;
+  color:#b8d7e5;
+}
+
+.stages{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:12px;
+  gap:11px;
 }
-.estacion{
-  background:#0b1c2b;
-  border:1px solid #20516a;
-  border-radius:10px;
-  padding:13px;
+
+.stage{
+  padding:14px;
+  border:1px solid #27556d;
+  background:#0b1d2d;
+  border-radius:9px;
   cursor:pointer;
 }
-.estacion:hover,.estacion.seleccionada{
-  border-color:#35d5ee;
-  background:#12354a;
+
+.stage.active{
+  border-color:#39d5ef;
+  background:#153b50;
 }
-.estacion h3{color:#35d5ee;margin:0 0 8px}
-.estacion p{color:#b8d0dd;font-size:14px;margin:0}
-.indicadores{
+
+.stage h3{
+  color:#39d5ef;
+  margin:0 0 8px;
+}
+
+.stage p{
+  color:#b5cedc;
+  font-size:14px;
+  margin:0;
+}
+
+.metrics{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-  gap:12px;
+  gap:10px;
 }
-.indicador{
-  background:#0b1c2b;
-  border-radius:9px;
+
+.metric{
   padding:14px;
-  border:1px solid #20516a;
+  border-radius:9px;
+  background:#0b1d2d;
+  border:1px solid #27556d;
 }
-.indicador strong{
+
+.metric strong{
   display:block;
-  color:#35d5ee;
-  font-size:23px;
   margin-top:7px;
+  font-size:23px;
+  color:#39d5ef;
 }
-label{display:block;margin:12px 0 6px;color:#b8d0dd}
-input[type=range]{width:100%;accent-color:#00a896}
-small{color:#9db9c9}
-footer{text-align:center;padding:20px;color:#7897a9}
+
+small{color:#a9c4d2}
+
+footer{
+  text-align:center;
+  padding:18px;
+  color:#789aaa;
+}
+
 @media(max-width:600px){
-  #visor{height:390px}
+  #visor{height:410px}
+  #scene{margin-left:-475px}
   header h1{font-size:22px}
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <h1>AquaSim 3D Pro</h1>
-  <p>Simulador interactivo del tratamiento y reúso de aguas residuales</p>
+  <p>Simulador interactivo para el tratamiento y reúso de aguas residuales</p>
 </header>
 
 <main>
-  <section class="panel">
-    <h2>Visualización tridimensional de la PTAR</h2>
-    <div id="visor">
-      <div id="mensaje">Cargando visualización 3D...</div>
-    </div>
-    <div class="controles">
-      <button id="iniciar">▶ Iniciar tratamiento</button>
-      <button id="pausar" class="secundario">Ⅱ Pausar</button>
-      <button id="reiniciar" class="secundario">↻ Reiniciar</button>
-      <button id="vista" class="secundario">Vista general</button>
-    </div>
-    <label for="avance">Progreso del tratamiento</label>
-    <input id="avance" type="range" min="0" max="100" value="0">
-    <small>Arrastra el control para observar cómo cambia el agua durante el proceso.</small>
-  </section>
 
-  <section class="panel">
-    <h2>Etapas del tratamiento</h2>
-    <div class="estaciones" id="listaEstaciones">
-      <div class="estacion seleccionada" data-stage="0">
-        <h3>1. Pretratamiento</h3>
-        <p>Retención de residuos sólidos y materiales de gran tamaño.</p>
-      </div>
-      <div class="estacion" data-stage="1">
-        <h3>2. Sedimentación</h3>
-        <p>Separación de partículas suspendidas mediante gravedad.</p>
-      </div>
-      <div class="estacion" data-stage="2">
-        <h3>3. Tratamiento biológico</h3>
-        <p>Acción de microorganismos y aireación del agua.</p>
-      </div>
-      <div class="estacion" data-stage="3">
-        <h3>4. Filtración y desinfección</h3>
-        <p>Retención de partículas pequeñas y desinfección con luz UV.</p>
-      </div>
-    </div>
-  </section>
+<section class="panel">
+  <h2>Visualización tridimensional de la planta</h2>
 
-  <section class="panel">
-    <h2>Indicadores del agua</h2>
-    <div class="indicadores">
-      <div class="indicador">pH<strong id="ph">6.2</strong></div>
-      <div class="indicador">Turbidez<strong id="turbidez">180 NTU</strong></div>
-      <div class="indicador">Tratamiento<strong id="eficiencia">0%</strong></div>
-      <div class="indicador">Estado<strong id="estado">Inicial</strong></div>
+  <div id="visor">
+    <div id="scene">
+      <div id="ground"></div>
+      <div id="tanks"></div>
+      <div id="pipes"></div>
+      <div id="particles"></div>
     </div>
-    <label for="caudal">Caudal de entrada (L/s)</label>
-    <input id="caudal" type="range" min="5" max="100" value="40">
-    <small>Caudal seleccionado: <span id="valorCaudal">40</span> L/s</small>
-  </section>
-  <footer>AquaSim 3D Pro · Modelo educativo de tratamiento de aguas residuales</footer>
+
+    <div id="legend">
+      Agua residual → Agua tratada
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="start">▶ Iniciar</button>
+    <button id="pause" class="secondary">Ⅱ Pausar</button>
+    <button id="reset" class="secondary">↻ Reiniciar</button>
+    <button id="general" class="secondary">Vista general</button>
+    <button id="rotate" class="secondary">Girar vista</button>
+    <button id="zoomIn" class="secondary">＋ Acercar</button>
+    <button id="zoomOut" class="secondary">－ Alejar</button>
+  </div>
+
+  <label for="progress">Avance del tratamiento</label>
+  <input id="progress" type="range" min="0" max="100" value="0">
+  <small>Desliza para observar cómo cambia el agua durante las etapas.</small>
+</section>
+
+<section class="panel">
+  <h2>Etapas del tratamiento</h2>
+
+  <div class="stages">
+    <div class="stage active" data-stage="0">
+      <h3>1. Pretratamiento</h3>
+      <p>Retención de residuos sólidos y materiales de gran tamaño.</p>
+    </div>
+
+    <div class="stage" data-stage="1">
+      <h3>2. Sedimentación</h3>
+      <p>Separación de partículas suspendidas mediante gravedad.</p>
+    </div>
+
+    <div class="stage" data-stage="2">
+      <h3>3. Tratamiento biológico</h3>
+      <p>Acción de microorganismos y aireación del agua.</p>
+    </div>
+
+    <div class="stage" data-stage="3">
+      <h3>4. Filtración y desinfección</h3>
+      <p>Retención de partículas pequeñas y desinfección del agua.</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Indicadores del agua</h2>
+
+  <div class="metrics">
+    <div class="metric">pH<strong id="ph">6.2</strong></div>
+    <div class="metric">Turbidez<strong id="turbidity">180 NTU</strong></div>
+    <div class="metric">Eficiencia<strong id="efficiency">0%</strong></div>
+    <div class="metric">Estado<strong id="status">Inicial</strong></div>
+  </div>
+
+  <label for="flow">Caudal de entrada (L/s)</label>
+  <input id="flow" type="range" min="5" max="100" value="40">
+  <small>Caudal seleccionado: <span id="flowValue">40</span> L/s</small>
+</section>
+
+<footer>
+  AquaSim 3D Pro · Simulación educativa
+</footer>
+
 </main>
 
-<!-- Three.js clásico: evita problemas con importmap y módulos -->
-<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
 <script>
-(function(){
 "use strict";
 
-const visor=document.getElementById("visor");
-const mensaje=document.getElementById("mensaje");
+/* ELEMENTOS PRINCIPALES */
 
-if(!window.THREE){
-  mensaje.innerHTML="No se pudo cargar Three.js.<br>Comprueba tu conexión a internet y vuelve a abrir el archivo.";
-  return;
-}
+const scene = document.getElementById("scene");
+const tanksContainer = document.getElementById("tanks");
+const pipesContainer = document.getElementById("pipes");
+const particlesContainer = document.getElementById("particles");
 
-let scene,camera,renderer,controls,clock;
-let running=false;
-let progress=0;
-let lastTime=0;
-let waterMeshes=[];
-let bubbles=[];
-let pipes=[];
-let stationGroups=[];
-let uvLights=[];
-let selectedStage=0;
-
-const colors=[
-  new THREE.Color("#854d0e"),
-  new THREE.Color("#a16207"),
-  new THREE.Color("#087fbc"),
-  new THREE.Color("#29d9dc")
-];
-
-const stageNames=[
+const stages = [
   "Pretratamiento",
   "Sedimentación",
   "Tratamiento biológico",
   "Filtración y desinfección"
 ];
 
-function material(color,roughness=0.65){
-  return new THREE.MeshStandardMaterial({
-    color:color,
-    roughness:roughness,
-    metalness:0.12
-  });
+const positions = [65, 295, 525, 755];
+
+const colors = [
+  [133,77,14],
+  [190,137,30],
+  [8,127,188],
+  [41,217,220]
+];
+
+let progress = 0;
+let running = false;
+let zoom = 0.85;
+let rotation = -18;
+let lastFrame = 0;
+let particles = [];
+
+/* CREAR TANQUES */
+
+function createTank(index){
+
+  const tank = document.createElement("div");
+  tank.className = "tank";
+  tank.style.left = positions[index] + "px";
+  tank.style.top = "130px";
+
+  const names = ["ENTRADA","SEDIMENTACIÓN","BIOLOGÍA","AGUA TRATADA"];
+
+  tank.innerHTML = `
+    <div class="tank-label">${names[index]}</div>
+    <div class="water" id="water${index}">
+      ${index===2 ? `
+        <div class="bubble" style="left:20%;animation-delay:0s"></div>
+        <div class="bubble" style="left:45%;animation-delay:.6s"></div>
+        <div class="bubble" style="left:70%;animation-delay:1.1s"></div>
+      ` : ""}
+    </div>
+    <div class="wall front"></div>
+    <div class="wall back"></div>
+    <div class="wall left"></div>
+    <div class="wall right"></div>
+  `;
+
+  tanksContainer.appendChild(tank);
 }
 
-function box(w,h,d,mat,x,y,z,parent){
-  const mesh=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),mat
-  );
-  mesh.position.set(x,y,z);
-  parent.add(mesh);
-  return mesh;
+/* CREAR TUBERÍAS */
+
+function createPipe(left,top,width){
+  const pipe = document.createElement("div");
+  pipe.className = "pipe";
+  pipe.style.left = left+"px";
+  pipe.style.top = top+"px";
+  pipe.style.width = width+"px";
+  pipesContainer.appendChild(pipe);
 }
 
-function cylinder(rt,rb,h,mat,x,y,z,parent){
-  const mesh=new THREE.Mesh(
-    new THREE.CylinderGeometry(rt,rb,h,32),mat
-  );
-  mesh.position.set(x,y,z);
-  parent.add(mesh);
-  return mesh;
+/* CREAR PARTÍCULAS */
+
+function createParticles(){
+
+  for(let i=0;i<24;i++){
+
+    const p = document.createElement("div");
+    p.className = "particle";
+
+    particlesContainer.appendChild(p);
+
+    particles.push({
+      element:p,
+      offset:i/24
+    });
+  }
 }
 
-function createTank(x,z,index){
-  const group=new THREE.Group();
-  group.position.set(x,0,z);
-  scene.add(group);
-  stationGroups.push(group);
+/* INTERPOLACIÓN DE COLORES */
 
-  const concrete=material("#637b8a");
-  const edge=material("#91a8b6");
-  const dark=material("#253d4c");
+function getColor(position){
 
-  // Base y paredes
-  box(4.2,0.25,3.1,dark,0,0,0,group);
-  box(4.2,1.7,0.18,concrete,0,0.85,-1.46,group);
-  box(4.2,1.7,0.18,concrete,0,0.85,1.46,group);
-  box(0.18,1.7,3.1,concrete,-2.01,0.85,0,group);
-  box(0.18,1.7,3.1,concrete,2.01,0.85,0,group);
+  const value = Math.max(0,Math.min(3,position));
+  const index = Math.min(2,Math.floor(value));
+  const fraction = value-index;
 
-  // Bordes superiores
-  box(4.3,0.12,0.23,edge,0,1.72,-1.46,group);
-  box(4.3,0.12,0.23,edge,0,1.72,1.46,group);
-  box(0.23,0.12,3.1,edge,-2.01,1.72,0,group);
-  box(0.23,0.12,3.1,edge,2.01,1.72,0,group);
+  const a = colors[index];
+  const b = colors[index+1];
 
-  // Agua con material transparente
-  const waterMat=new THREE.MeshStandardMaterial({
-    color:colors[index],
-    transparent:true,
-    opacity:0.82,
-    roughness:0.2,
-    metalness:0.08,
-    side:THREE.DoubleSide
-  });
+  const r = Math.round(a[0]+(b[0]-a[0])*fraction);
+  const g = Math.round(a[1]+(b[1]-a[1])*fraction);
+  const bl = Math.round(a[2]+(b[2]-a[2])*fraction);
 
-  const water=new THREE.Mesh(
-    new THREE.PlaneGeometry(3.75,2.55,30,20),
-    waterMat
-  );
-  water.rotation.x=-Math.PI/2;
-  water.position.y=1.12;
-  group.add(water);
-  waterMeshes.push(water);
-
-  // Ondulación de la superficie
-  water.userData.positions=water.geometry.attributes.position.array.slice();
-
-  // Soportes metálicos
-  for(let side of [-1,1]){
-    for(let j=-1;j<=1;j++){
-      cylinder(0.045,0.045,1.8,edge,side*1.85,0.9,j*0.85,group);
-    }
-  }
-
-  // Elementos diferentes por estación
-  if(index===0){
-    // Rejillas de desbaste
-    for(let i=0;i<9;i++){
-      box(0.055,1.1,0.12,edge,-1.1+i*0.27,1.3,0,group);
-    }
-    box(0.12,1.15,2.1,dark,-1.1,1.3,0,group);
-  }
-
-  if(index===1){
-    // Puente y mecanismo de sedimentación
-    box(0.16,0.12,2.7,edge,0,1.9,0,group);
-    const scraper=box(2.9,0.12,0.12,edge,0,1.4,0,group);
-    scraper.userData.scraper=true;
-  }
-
-  if(index===2){
-    // Aireadores y burbujas
-    for(let i=0;i<5;i++){
-      cylinder(0.13,0.13,0.08,dark,-1.3+i*0.65,0.32,0,group);
-    }
-    for(let i=0;i<18;i++){
-      const bubble=new THREE.Mesh(
-        new THREE.SphereGeometry(0.045+Math.random()*0.04,10,10),
-        new THREE.MeshBasicMaterial({
-          color:"#9defff",
-          transparent:true,
-          opacity:0.75
-        })
-      );
-      bubble.position.set(
-        -1.5+Math.random()*3,
-        0.35+Math.random()*0.65,
-        -0.9+Math.random()*1.8
-      );
-      group.add(bubble);
-      bubbles.push({mesh:bubble,base: bubble.position.y,phase:Math.random()*6.28});
-    }
-  }
-
-  if(index===3){
-    // Filtro de grava y arena
-    for(let i=0;i<3;i++){
-      const layer=box(0.85,0.12,1.8,
-        material(["#8d7654","#c5b28b","#657d8b"][i]),
-        -0.9+i*0.9,0.36+i*0.12,0,group);
-    }
-
-    // Lámparas UV
-    for(let i=0;i<3;i++){
-      const lamp=cylinder(0.055,0.055,1.7,
-        material("#35d5ee",0.2),
-        -0.8+i*0.8,1.48,0,group);
-      lamp.rotation.z=Math.PI/2;
-      uvLights.push(lamp);
-    }
-  }
-
-  // Identificación de estación
-  const label=box(0.9,0.12,0.12,material("#00a896"),0,2.05,0,group);
-  label.position.y=2.05;
-
-  return group;
+  return `rgb(${r},${g},${bl})`;
 }
 
-function createPipe(x1,z1,x2,z2){
-  const dx=x2-x1;
-  const dz=z2-z1;
-  const length=Math.sqrt(dx*dx+dz*dz);
-  const pipe=cylinder(
-    0.105,0.105,length,
-    material("#38bdf8",0.3),
-    (x1+x2)/2,1.3,(z1+z2)/2,scene
-  );
-  pipe.rotation.x=Math.PI/2;
-  pipe.rotation.z=-Math.atan2(dz,dx);
-  pipes.push(pipe);
-}
+/* ACTUALIZAR EL COLOR DEL AGUA */
 
-function init(){
-  scene=new THREE.Scene();
-  scene.background=new THREE.Color("#071522");
-  scene.fog=new THREE.Fog("#071522",24,55);
+function updateWater(){
 
-  camera=new THREE.PerspectiveCamera(
-    45,visor.clientWidth/visor.clientHeight,0.1,100
-  );
-  camera.position.set(8,9,15);
-
-  renderer=new THREE.WebGLRenderer({
-    antialias:true,
-    alpha:false
-  });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-  renderer.setSize(visor.clientWidth,visor.clientHeight);
-  renderer.shadowMap.enabled=true;
-  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  visor.appendChild(renderer.domElement);
-
-  controls=new THREE.OrbitControls(camera,renderer.domElement);
-  controls.enableDamping=true;
-  controls.target.set(0,0.7,0);
-  controls.maxPolarAngle=Math.PI/2.05;
-  controls.minDistance=7;
-  controls.maxDistance=28;
-
-  clock=new THREE.Clock();
-
-  // Iluminación
-  scene.add(new THREE.HemisphereLight("#b9eaff","#193044",1.3));
-
-  const sun=new THREE.DirectionalLight("#ffffff",1.6);
-  sun.position.set(7,12,8);
-  sun.castShadow=true;
-  scene.add(sun);
-
-  const fill=new THREE.PointLight("#00a896",1.1,35);
-  fill.position.set(-7,5,-5);
-  scene.add(fill);
-
-  // Suelo
-  const floor=new THREE.Mesh(
-    new THREE.PlaneGeometry(40,30),
-    material("#102638")
-  );
-  floor.rotation.x=-Math.PI/2;
-  floor.position.y=-0.17;
-  floor.receiveShadow=true;
-  scene.add(floor);
-
-  // Cuatro estaciones alineadas
-  const positions=[-9,-3,3,9];
   for(let i=0;i<4;i++){
-    createTank(positions[i],0,i);
-  }
 
-  // Tuberías entre estaciones
-  for(let i=0;i<3;i++){
-    createPipe(positions[i]+2.1,0,positions[i+1]-2.1,0);
-  }
+    /*
+      El agua avanza progresivamente por los cuatro tanques.
+      Cada tanque representa una fase del tratamiento.
+    */
 
-  // Tubería de entrada y salida
-  createPipe(-13,0,-11.1,0);
-  createPipe(11.1,0,13,0);
-
-  // Señal de salida
-  const outlet=cylinder(0.12,0.12,1.5,material("#29d9dc"),13.2,1.3,0,scene);
-  outlet.rotation.z=Math.PI/2;
-
-  // Luces de referencia
-  for(let i=0;i<4;i++){
-    const light=new THREE.PointLight("#00a896",0.5,5);
-    light.position.set(positions[i],3,0);
-    scene.add(light);
-  }
-
-  // Partículas que recorren el proceso
-  createFlowParticles();
-
-  mensaje.style.display="none";
-  animate();
-  updateProgress(0);
-}
-
-let flowParticles=[];
-
-function createFlowParticles(){
-  for(let i=0;i<45;i++){
-    const particle=new THREE.Mesh(
-      new THREE.SphereGeometry(0.065,10,10),
-      new THREE.MeshStandardMaterial({
-        color:"#38bdf8",
-        emissive:"#087fbc",
-        emissiveIntensity:0.35
-      })
+    const waterPosition = Math.max(
+      0,
+      Math.min(3,progress/100*3-(3-i))
     );
-    scene.add(particle);
-    flowParticles.push(particle);
+
+    document.getElementById("water"+i).style.background =
+      getColor(waterPosition);
   }
 }
 
-// Mezcla gradual de colores
-function interpolateWater(stage,localProgress){
-  const start=colors[stage];
-  const end=colors[Math.min(stage+1,3)];
-  return start.clone().lerp(end,localProgress);
-}
+/* ACTUALIZAR INDICADORES */
 
-function updateWaterColors(value){
-  const scaled=value/100*3;
-  const currentStage=Math.min(2,Math.floor(scaled));
-  const local=scaled-currentStage;
+function updateIndicators(){
 
-  waterMeshes.forEach((water,index)=>{
-    // Cada tanque muestra un punto diferente del proceso.
-    const tankPosition=Math.max(0,Math.min(3,
-      currentStage+local-(3-index)
-    ));
+  const stage = Math.min(3,Math.floor(progress/100*3));
 
-    const stage=Math.min(2,Math.floor(tankPosition));
-    const fraction=tankPosition-stage;
-    const color=interpolateWater(stage,fraction);
-
-    // El agua de cada tanque se actualiza progresivamente.
-    water.material.color.copy(color);
-    water.material.opacity=0.76+0.08*Math.sin(tankPosition*Math.PI);
-  });
-}
-
-function updateProgress(value){
-  progress=Math.max(0,Math.min(100,Number(value)));
-  document.getElementById("avance").value=progress;
-
-  updateWaterColors(progress);
-
-  const scaled=progress/100*3;
-  selectedStage=Math.min(3,Math.floor(scaled));
-
-  document.querySelectorAll(".estacion").forEach((el,i)=>{
-    el.classList.toggle("seleccionada",i===selectedStage);
-  });
-
-  document.getElementById("ph").textContent=
+  document.getElementById("ph").textContent =
     (6.2+progress*0.017).toFixed(1);
 
-  document.getElementById("turbidez").textContent=
+  document.getElementById("turbidity").textContent =
     Math.round(180-progress*1.72)+" NTU";
 
-  document.getElementById("eficiencia").textContent=
+  document.getElementById("efficiency").textContent =
     Math.round(progress*0.94)+"%";
 
-  document.getElementById("estado").textContent=
-    progress<25?"Pretratamiento":
-    progress<50?"Sedimentación":
-    progress<75?"Biológico":
-    progress<100?"Filtración":"Finalizado";
+  document.getElementById("status").textContent =
+    progress===100 ? "Finalizado" : stages[stage];
+
+  document.querySelectorAll(".stage").forEach((element,index)=>{
+    element.classList.toggle("active",index===stage);
+  });
 }
 
-function animate(){
+/* ACTUALIZAR SIMULACIÓN */
+
+function setProgress(value){
+
+  progress = Math.max(0,Math.min(100,Number(value)));
+
+  document.getElementById("progress").value = progress;
+
+  updateWater();
+  updateIndicators();
+}
+
+/* ANIMACIÓN DE PARTÍCULAS */
+
+function animateParticles(time){
+
+  particles.forEach((particle)=>{
+
+    const movement = ((time*0.000035)+particle.offset)%1;
+
+    const x = 15 + movement*920;
+    const y = 190 + Math.sin(time*0.002+particle.offset*20)*12;
+
+    particle.element.style.left = x+"px";
+    particle.element.style.top = y+"px";
+  });
+}
+
+/* BUCLE DE ANIMACIÓN */
+
+function animate(time){
+
   requestAnimationFrame(animate);
-  const elapsed=clock.getElapsedTime();
+
+  if(!lastFrame)lastFrame=time;
+
+  const delta=Math.min((time-lastFrame)/1000,0.05);
+  lastFrame=time;
 
   if(running){
-    progress+=clock.getDelta()*3.2;
+
+    setProgress(progress+delta*3.5);
+
     if(progress>=100){
-      progress=100;
       running=false;
     }
-    updateProgress(progress);
   }
 
-  // Movimiento de la superficie del agua
-  waterMeshes.forEach((water,index)=>{
-    const positions=water.geometry.attributes.position;
-    const original=water.userData.positions;
-
-    for(let i=0;i<positions.count;i++){
-      const x=original[i*3];
-      const y=original[i*3+1];
-      const wave=Math.sin(x*2+elapsed*1.5+index)*0.025+
-                 Math.cos(y*2+elapsed+index)*0.018;
-      positions.setZ(i,wave);
-    }
-    positions.needsUpdate=true;
-    water.geometry.computeVertexNormals();
-  });
-
-  // Burbujas ascendentes
-  bubbles.forEach(b=>{
-    b.mesh.position.y=0.35+
-      ((elapsed*0.65+b.phase)%1.2);
-  });
-
-  // Movimiento de partículas por la planta
-  flowParticles.forEach((particle,i)=>{
-    const offset=i/flowParticles.length;
-    const travel=((elapsed*0.035+offset)%1);
-    const x=-13+travel*26;
-    particle.position.set(
-      x,
-      1.2+Math.sin(elapsed*2+i)*0.12,
-      Math.sin(elapsed+i)*0.3
-    );
-
-    const color=interpolateWater(
-      Math.min(2,Math.floor(travel*3)),
-      (travel*3)%1
-    );
-    particle.material.color.copy(color);
-  });
-
-  // Iluminación de las lámparas UV
-  uvLights.forEach(lamp=>{
-    lamp.material.emissive=new THREE.Color("#087fbc");
-    lamp.material.emissiveIntensity=0.7+Math.sin(elapsed*3)*0.3;
-  });
-
-  controls.update();
-  renderer.render(scene,camera);
+  animateParticles(time);
 }
 
-function resize(){
-  if(!renderer||!camera)return;
-  const width=visor.clientWidth;
-  const height=visor.clientHeight;
-  camera.aspect=width/height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(width,height);
-}
+/* CONTROLES DE SIMULACIÓN */
 
-document.getElementById("iniciar").addEventListener("click",()=>{
-  if(progress>=100)updateProgress(0);
+document.getElementById("start").addEventListener("click",()=>{
+
+  if(progress>=100)setProgress(0);
+
   running=true;
 });
 
-document.getElementById("pausar").addEventListener("click",()=>{
+document.getElementById("pause").addEventListener("click",()=>{
   running=false;
 });
 
-document.getElementById("reiniciar").addEventListener("click",()=>{
+document.getElementById("reset").addEventListener("click",()=>{
   running=false;
-  updateProgress(0);
+  setProgress(0);
 });
 
-document.getElementById("vista").addEventListener("click",()=>{
-  camera.position.set(8,9,15);
-  controls.target.set(0,0.7,0);
-  controls.update();
-});
-
-document.getElementById("avance").addEventListener("input",e=>{
+document.getElementById("progress").addEventListener("input",(event)=>{
   running=false;
-  updateProgress(e.target.value);
+  setProgress(event.target.value);
 });
 
-document.getElementById("caudal").addEventListener("input",e=>{
-  document.getElementById("valorCaudal").textContent=e.target.value;
-});
+/* SELECCIÓN DE ETAPAS */
 
-document.querySelectorAll(".estacion").forEach((el,index)=>{
-  el.addEventListener("click",()=>{
+document.querySelectorAll(".stage").forEach((element,index)=>{
+
+  element.addEventListener("click",()=>{
+
     running=false;
-    updateProgress(index*100/3);
-    camera.position.set(
-      [-9,-3,3,9][index]+3,
-      5,
-      7
+
+    setProgress(index*100/3);
+
+    const center = positions[index]+75;
+
+    scene.style.setProperty("--rx","58deg");
+    scene.style.setProperty("--rz","-18deg");
+
+    scene.style.setProperty(
+      "transform",
+      `scale(${zoom}) rotateX(58deg) rotateZ(-18deg) translateX(${475-center}px)`
     );
-    controls.target.set([-9,-3,3,9][index],0.7,0);
-    controls.update();
   });
 });
 
-window.addEventListener("resize",resize);
+/* VISTA GENERAL */
 
-try{
-  init();
-}catch(error){
-  console.error(error);
-  mensaje.style.display="flex";
-  mensaje.textContent="Ocurrió un error al crear el visor 3D: "+error.message;
+document.getElementById("general").addEventListener("click",()=>{
+
+  zoom=0.85;
+  rotation=-18;
+
+  scene.style.transform =
+    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
+});
+
+/* GIRO DE LA VISTA */
+
+document.getElementById("rotate").addEventListener("click",()=>{
+
+  rotation-=25;
+
+  scene.style.transform =
+    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
+});
+
+/* ZOOM */
+
+document.getElementById("zoomIn").addEventListener("click",()=>{
+
+  zoom=Math.min(1.25,zoom+0.1);
+
+  scene.style.transform =
+    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
+});
+
+document.getElementById("zoomOut").addEventListener("click",()=>{
+
+  zoom=Math.max(0.55,zoom-0.1);
+
+  scene.style.transform =
+    `scale(${zoom}) rotateX(58deg) rotateZ(${rotation}deg)`;
+});
+
+/* CAUDAL */
+
+document.getElementById("flow").addEventListener("input",(event)=>{
+
+  document.getElementById("flowValue").textContent=event.target.value;
+});
+
+/* INICIAR */
+
+for(let i=0;i<4;i++){
+  createTank(i);
 }
-})();
+
+createPipe(205,190,90);
+createPipe(435,190,90);
+createPipe(665,190,90);
+
+createParticles();
+
+setProgress(0);
+
+requestAnimationFrame(animate);
+
 </script>
+
 </body>
 </html>
-
