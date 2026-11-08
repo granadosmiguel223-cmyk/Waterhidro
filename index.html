@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AquaSim 3D Pro</title>
+<title>AquaSim 3D Pro - Santa Marta</title>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#071625;color:#eaf8ff;font-family:Arial,sans-serif}
 header{padding:20px;background:#0c263b;border-bottom:1px solid #24516c}
 header h1{margin:0;color:#25d5e8;font-size:23px}
-header p{margin:7px 0 0;color:#a9c5d7;font-size:13px}
+header p{margin:7px 0;color:#a9c5d7;font-size:13px}
 main{max-width:1200px;margin:auto;padding:20px}
 h2{color:#24d5e8;font-size:21px}
 h3{font-size:15px}
@@ -21,7 +21,7 @@ p{line-height:1.5;color:#b9d0df;font-size:13px}
 .stage-btn,button{cursor:pointer;border:1px solid #32617c;background:#0b2032;color:white;border-radius:8px;padding:10px}
 .stage-btn{text-align:left}
 .stage-btn.active,button.primary{background:#087d9f;border-color:#26d8e8}
-.stage-btn:hover,button:hover{filter:brightness(1.2)}
+button:disabled{opacity:.4;cursor:not-allowed}
 .viewer{height:420px;position:relative;overflow:hidden;border:1px solid #28516b;border-radius:13px;background:radial-gradient(ellipse at center bottom,#176184,#071625 70%)}
 .scene{height:100%;display:flex;align-items:center;justify-content:center;perspective:900px;touch-action:pan-y;cursor:grab}
 .model{width:260px;height:200px;position:relative;transform-style:preserve-3d;transform:rotateX(-10deg) rotateY(-20deg)}
@@ -37,11 +37,11 @@ p{line-height:1.5;color:#b9d0df;font-size:13px}
 .blades{position:absolute;top:40px;left:75px;width:70px;height:70px;border:5px solid white;border-radius:50%;animation:spin 3s linear infinite}
 .blades:before,.blades:after{content:"";position:absolute;top:0;left:28px;width:5px;height:58px;background:white}
 .blades:after{transform:rotate(90deg)}
-@keyframes spin{to{rotate:360deg}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .filter{position:absolute;bottom:0;width:100%;height:45%;background:repeating-linear-gradient(to bottom,#c6a875 0 9px,#8daeb4 9px 18px,#405d6c 18px 25px)}
 .uv{display:flex;justify-content:space-around;padding:15px}
 .uv i{width:7px;height:100px;background:#ae8bff;box-shadow:0 0 15px #ae8bff}
-.caption{position:absolute;top:13px;left:13px;background:#061b2b;padding:9px;border-radius:7px;font-size:12px}
+.caption{position:absolute;top:13px;left:13px;background:#061b2b;padding:9px;border-radius:7px;font-size:12px;z-index:2}
 .controls{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
 .controls button{font-size:11px;padding:9px}
 .info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}
@@ -57,7 +57,7 @@ input{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #315
 .result{background:#071b2b;border:1px solid #294a60;border-radius:8px;padding:11px;overflow-wrap:anywhere}
 .result small{color:#9cb7c8;font-size:10px}
 .result strong{display:block;color:#28d8e8;margin-top:7px;font-size:14px}
-.equation{background:#071b2b;border-radius:8px;padding:12px;margin-top:12px;font-size:12px;line-height:1.7;color:#c4e2ef}
+.equation{background:#071b2b;border-radius:8px;padding:12px;margin-top:12px;font-size:12px;line-height:1.7;color:#c4e2ef;overflow-wrap:anywhere}
 canvas{width:100%;height:200px;background:#071b2b;border-radius:8px;margin-top:15px}
 .note{font-size:11px;color:#8faabd}
 @media(max-width:750px){
@@ -69,31 +69,37 @@ canvas{width:100%;height:200px;background:#071b2b;border-radius:8px;margin-top:1
 @media(max-width:430px){
  main{padding:12px}
  .viewer{height:390px}
- .model{scale:.8}
+ .model{transform:scale(.8) rotateX(-10deg) rotateY(-20deg)}
  .results{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
+
 <header>
-<h1>💧 AquaSim 3D Pro</h1>
-<p>Simulador interactivo de tratamiento y gestión del agua</p>
+<h1>💧 AquaSim 3D Pro — Santa Marta y Magdalena</h1>
+<p>Simulador interactivo de gestión hídrica y tratamiento del agua</p>
+<p>📍 Contexto académico: río Manzanares y sistema hídrico de Santa Marta</p>
 </header>
 
 <main>
-<h2>Simulador de tratamiento de aguas</h2>
-<p>Explora las etapas del tratamiento, modifica variables hidráulicas y observa los resultados matemáticos.</p>
+
+<h2>Simulador de gestión y tratamiento hídrico</h2>
+<p>Explora las etapas del tratamiento del agua, modifica variables hidráulicas y ejecuta modelos matemáticos aplicados a la gestión del recurso hídrico.</p>
 
 <div class="layout">
+
 <section class="panel">
 <h3>Etapas del tratamiento</h3>
 <div class="stage-list" id="stageList"></div>
 </section>
 
 <section>
+
 <div class="viewer">
-<div class="caption" id="caption">Etapa 1: Pretratamiento</div>
+<div class="caption" id="caption">Etapa 1: Captación</div>
+
 <div class="scene" id="scene">
 <div class="model" id="model">
 <div class="top"></div>
@@ -104,6 +110,7 @@ canvas{width:100%;height:200px;background:#071b2b;border-radius:8px;margin-top:1
 </div>
 </div>
 </div>
+
 <div class="controls">
 <button id="rotateLeft">↶ Girar</button>
 <button id="previous">← Anterior</button>
@@ -115,21 +122,24 @@ canvas{width:100%;height:200px;background:#071b2b;border-radius:8px;margin-top:1
 </div>
 
 <div class="info">
+
 <div class="panel">
-<h3 id="stageTitle">1. Pretratamiento</h3>
+<h3 id="stageTitle">1. Captación y pretratamiento</h3>
 <p id="description"></p>
 Progreso: <span id="progressText">17%</span>
 <div class="progress"><div id="progressBar"></div></div>
 </div>
+
 <div class="panel">
 <h3>Indicadores ilustrativos</h3>
 <div class="results">
-<div class="metric"><small>Turbidez</small><strong id="turbidity">Alta</strong></div>
+<div class="metric"><small>Turbidez</small><strong id="turbidity">Muy alta</strong></div>
 <div class="metric"><small>pH</small><strong id="ph">6.5</strong></div>
-<div class="metric"><small>Claridad</small><strong id="clarity">Baja</strong></div>
+<div class="metric"><small>Claridad</small><strong id="clarity">Muy baja</strong></div>
 </div>
 <p class="note">Valores didácticos, no mediciones reales de laboratorio.</p>
 </div>
+
 </div>
 </section>
 </div>
@@ -138,6 +148,7 @@ Progreso: <span id="progressText">17%</span>
 
 <section class="panel">
 <h3>1. Cálculos hidráulicos y volumen del tanque</h3>
+
 <div class="fields">
 <label>Caudal (L/s)<input id="flow" type="number" value="2.85" step="any"></label>
 <label>Cota inicial (m)<input id="e1" type="number" value="12.5" step="any"></label>
@@ -146,182 +157,364 @@ Progreso: <span id="progressText">17%</span>
 <label>Ancho (m)<input id="width" type="number" value="4" step="any"></label>
 <label>Profundidad (m)<input id="depth" type="number" value="2.2" step="any"></label>
 </div>
+
 <button class="primary" id="calcHydro">Calcular variables</button>
+
 <div class="results">
 <div class="result"><small>Caudal convertido</small><strong id="rFlow">0.00285 m³/s</strong></div>
 <div class="result"><small>Volumen del tanque</small><strong id="rVolume">74.80 m³</strong></div>
 <div class="result"><small>Diferencia de cotas</small><strong id="rElevation">-2.70 m</strong></div>
 </div>
-<div class="equation" id="eqHydro">Q = L/s ÷ 1000<br>V = Largo × Ancho × Profundidad<br>ΔH = Cota final − Cota inicial</div>
+
+<div class="equation" id="eqHydro">
+Q = Caudal en L/s ÷ 1000<br>
+V = Largo × Ancho × Profundidad<br>
+ΔH = Cota final − Cota inicial
+</div>
 </section>
 
 <section class="panel">
-<h3>2. Modelo económico lineal</h3>
-<p>Calcula el costo mensual estimado de operación del sistema.</p>
+<h3>2. Ecuación lineal: costo mensual de bombeo</h3>
+<p>Proyección del costo de operación según el volumen de agua impulsado.</p>
+
 <div class="fields">
-<label>Tarifa por m³ (COP)<input id="tariff" type="number" value="450"></label>
-<label>Cargo fijo (COP)<input id="fixed" type="number" value="250000"></label>
-<label>Días de operación<input id="days" type="number" value="30"></label>
+<label>Tarifa por m³ (COP)<input id="tariff" type="number" value="450" step="any"></label>
+<label>Cargo fijo mensual (COP)<input id="fixed" type="number" value="250000" step="any"></label>
+<label>Días de operación<input id="days" type="number" value="30" min="1" max="31"></label>
 </div>
-<button class="primary" id="calcEconomy">Calcular costo mensual</button>
+
+<button class="primary" id="calcEconomy">Calcular costo de bombeo</button>
+
 <div class="results">
 <div class="result"><small>Volumen mensual</small><strong id="rMonthly">7.394,40 m³</strong></div>
 <div class="result"><small>Costo variable</small><strong id="rVariable">$3.327.480</strong></div>
 <div class="result"><small>Costo total</small><strong id="rTotal">$3.577.480</strong></div>
 </div>
-<div class="equation" id="eqEconomy">Volumen mensual = Caudal × 86,4 × días<br>Costo = Volumen mensual × Tarifa + Cargo fijo</div>
-<p class="note">Tarifa y cargo fijo de ejemplo, no son tarifas oficiales.</p>
+
+<div class="equation" id="eqEconomy">
+Volumen mensual = Caudal × 86,4 × días<br>
+Costo total = Volumen × Tarifa + Cargo fijo
+</div>
+<p class="note">Tarifa y cargo fijo son valores de ejemplo, no tarifas oficiales.</p>
 </section>
 
 <section class="panel">
-<h3>3. Modelo cuadrático: canal trapezoidal</h3>
+<h3>3. Ecuación cuadrática: optimización de canal rectangular</h3>
+<p>Se calcula el área máxima de un canal rectangular cuando su perímetro disponible es constante.</p>
+
 <div class="fields">
-<label>Base inferior b (m)<input id="base" type="number" value="0.6" step="any"></label>
-<label>Pendiente lateral m<input id="slope" type="number" value="1" step="any"></label>
-<label>Profundidad y (m)<input id="yd" type="number" value="0.8" step="any"></label>
-<label>Área objetivo (m²)<input id="target" type="number" value="1.12" step="any"></label>
+<label>Perímetro disponible P (m)<input id="perim" type="number" value="3.2" step="any"></label>
+<label>Profundidad evaluada y (m)<input id="rectY" type="number" value="0.8" step="any"></label>
+</div>
+
+<button class="primary" id="calcQuadratic">Calcular optimización</button>
+
+<div class="results">
+<div class="result"><small>Profundidad óptima</small><strong id="rOptY">0,80 m</strong></div>
+<div class="result"><small>Área máxima</small><strong id="rMaxA">1,28 m²</strong></div>
+<div class="result"><small>Área evaluada</small><strong id="rEvalA">1,28 m²</strong></div>
+</div>
+
+<div class="equation" id="eqQuadratic">
+A(y) = (P − 2y) × y<br>
+A(y) = −2y² + Py<br>
+y óptimo = P / 4
+</div>
+</section>
+
+<section class="panel">
+<h3>4. Canal trapezoidal y ecuación de Manning</h3>
+
+<div class="fields">
+<label>Base inferior b (m)<input id="trapBase" type="number" value="0.6" step="any"></label>
+<label>Pendiente lateral m<input id="trapSlope" type="number" value="1" step="any"></label>
+<label>Profundidad y (m)<input id="trapY" type="number" value="0.8" step="any"></label>
 <label>Pendiente del canal S<input id="gradient" type="number" value="0.002" step="any"></label>
 <label>Coeficiente Manning n<input id="manning" type="number" value="0.013" step="any"></label>
 </div>
+
 <button class="primary" id="calcChannel">Calcular canal</button>
+
 <div class="results">
 <div class="result"><small>Área transversal</small><strong id="rArea">1,12 m²</strong></div>
-<div class="result"><small>Profundidad objetivo</small><strong id="rDepth">0,80 m</strong></div>
+<div class="result"><small>Radio hidráulico</small><strong id="rRadius">— m</strong></div>
 <div class="result"><small>Caudal Manning</small><strong id="rManning">— m³/s</strong></div>
 </div>
-<div class="equation" id="eqChannel">A(y) = b × y + m × y²<br>m × y² + b × y − Aobjetivo = 0<br>Q = (1/n) × A × R^(2/3) × S^(1/2)</div>
+
+<div class="equation" id="eqChannel">
+A = by + my²<br>
+P mojado = b + 2y√(1 + m²)<br>
+R = A / P mojado<br>
+Q = (1/n) × A × R^(2/3) × S^(1/2)
+</div>
 </section>
 
 <section class="panel">
-<h3>4. Flujo en tubería y pérdida de carga</h3>
+<h3>5. Flujo en tubería y pérdida de carga</h3>
+
 <div class="fields">
-<label>Caudal (L/s)<input id="pipeFlow" type="number" value="2.85"></label>
-<label>Diámetro (mm)<input id="diameter" type="number" value="50"></label>
-<label>Longitud (m)<input id="pipeLength" type="number" value="100"></label>
-<label>Factor de fricción f<input id="friction" type="number" value="0.025"></label>
+<label>Caudal (L/s)<input id="pipeFlow" type="number" value="2.85" step="any"></label>
+<label>Diámetro (mm)<input id="diameter" type="number" value="50" step="any"></label>
+<label>Longitud (m)<input id="pipeLength" type="number" value="100" step="any"></label>
+<label>Factor de fricción f<input id="friction" type="number" value="0.025" step="any"></label>
 </div>
+
 <button class="primary" id="calcPipe">Calcular tubería</button>
+
 <div class="results">
 <div class="result"><small>Velocidad</small><strong id="rVelocity">— m/s</strong></div>
 <div class="result"><small>Pérdida de carga</small><strong id="rLoss">— m</strong></div>
 <div class="result"><small>Área interna</small><strong id="rPipeArea">— m²</strong></div>
 </div>
-<div class="equation" id="eqPipe">v = Q / A<br>A = π × D² / 4<br>hₗ = f × (L/D) × (v² / 2g)</div>
+
+<div class="equation" id="eqPipe">
+A = π × D² / 4<br>
+v = Q / A<br>
+hL = f × (L/D) × (v² / 2g)
+</div>
 <p class="note">Se utiliza g = 9,81 m/s². No se incluyen pérdidas menores.</p>
 </section>
 
 <section class="panel">
-<h3>5. Simulación del nivel del tanque</h3>
+<h3>6. Simulación del nivel del tanque</h3>
+
 <div class="fields">
-<label>Caudal de entrada (L/s)<input id="inflow" type="number" value="3"></label>
-<label>Caudal de salida (L/s)<input id="outflow" type="number" value="2"></label>
-<label>Área del tanque (m²)<input id="tankArea" type="number" value="20"></label>
-<label>Nivel inicial (m)<input id="initial" type="number" value="1.2"></label>
-<label>Tiempo (min)<input id="minutes" type="number" value="30"></label>
-<label>Altura máxima (m)<input id="maximum" type="number" value="3"></label>
+<label>Caudal de entrada (L/s)<input id="inflow" type="number" value="3" step="any"></label>
+<label>Caudal de salida (L/s)<input id="outflow" type="number" value="2" step="any"></label>
+<label>Área del tanque (m²)<input id="tankArea" type="number" value="20" step="any"></label>
+<label>Nivel inicial (m)<input id="initial" type="number" value="1.2" step="any"></label>
+<label>Tiempo (min)<input id="minutes" type="number" value="30" step="any"></label>
+<label>Altura máxima (m)<input id="maximum" type="number" value="3" step="any"></label>
 </div>
+
 <button class="primary" id="simulateLevel">Simular nivel</button>
+
 <div class="results">
 <div class="result"><small>Nivel final</small><strong id="rFinal">1,29 m</strong></div>
 <div class="result"><small>Variación</small><strong id="rChange">+0,09 m</strong></div>
 <div class="result"><small>Estado</small><strong id="rState">Subiendo</strong></div>
 </div>
-<div class="equation" id="eqLevel">ΔV = (Qentrada − Qsalida) × tiempo<br>Δh = ΔV / Área<br>Nivel final = Nivel inicial + Δh</div>
+
+<div class="equation" id="eqLevel">
+ΔV = (Qentrada − Qsalida) × tiempo<br>
+Δh = ΔV / Área<br>
+Nivel final = Nivel inicial + Δh
+</div>
+
 <canvas id="chart" width="700" height="220"></canvas>
 </section>
 
-<p class="note">AquaSim 3D Pro es un prototipo académico. Los resultados son aproximaciones didácticas y no sustituyen mediciones reales ni diseños profesionales.</p>
+<p class="note">
+AquaSim 3D Pro es un prototipo académico. Sus resultados son aproximaciones didácticas y no sustituyen mediciones reales, análisis de laboratorio ni diseños profesionales.
+</p>
+
 </main>
 
 <script>
 "use strict";
 
-const $=id=>document.getElementById(id);
-const N=id=>Number($(id).value);
-const fmt=(v,d=2)=>Number(v).toLocaleString("es-CO",{minimumFractionDigits:d,maximumFractionDigits:d});
-const money=v=>"$"+Math.round(v).toLocaleString("es-CO");
+const $ = id => document.getElementById(id);
+const N = id => Number($(id).value);
 
-const stages=[
- {name:"Pretratamiento",tank:"Tanque de desbaste",turb:"Muy alta",ph:"6.5",clarity:"Muy baja",color:"#98744b",height:76,detail:"grate",desc:"Se retienen residuos grandes, arenas y materiales que pueden obstruir los equipos. Se utilizan rejillas y desarenadores."},
- {name:"Sedimentación primaria",tank:"Tanque sedimentador",turb:"Alta",ph:"6.6",clarity:"Baja",color:"#92754d",height:69,detail:"",desc:"El agua permanece en reposo para permitir que parte de los sólidos suspendidos se depositen en el fondo por gravedad."},
- {name:"Tratamiento biológico",tank:"Reactor biológico",turb:"Media-alta",ph:"6.8",clarity:"Media",color:"#39846f",height:72,detail:"blades",desc:"Los microorganismos degradan parte de la materia orgánica presente en el agua. Algunos sistemas suministran aire para favorecer su actividad."},
- {name:"Sedimentación secundaria",tank:"Clarificador secundario",turb:"Media-baja",ph:"7.0",clarity:"Media-alta",color:"#318b9b",height:65,detail:"",desc:"Se separan del agua los lodos biológicos generados durante el tratamiento. El agua clarificada continúa hacia las etapas finales."},
- {name:"Filtración",tank:"Filtro de varias capas",turb:"Baja",ph:"7.1",clarity:"Alta",color:"#258da8",height:62,detail:"filter",desc:"El agua pasa por materiales filtrantes que ayudan a retener partículas que permanecen después de la sedimentación."},
- {name:"Desinfección",tank:"Tanque de desinfección",turb:"Muy baja",ph:"7.2",clarity:"Alta",color:"#26b9c4",height:59,detail:"uv",desc:"Se aplica un proceso como cloración o radiación ultravioleta para reducir microorganismos. La calidad final debe comprobarse mediante análisis."}
+const fmt = (v,d=2) => Number(v).toLocaleString("es-CO",{
+ minimumFractionDigits:d,
+ maximumFractionDigits:d
+});
+
+const money = v => "$"+Math.round(v).toLocaleString("es-CO");
+
+const stages = [
+{
+ name:"Captación y pretratamiento",
+ tank:"Desarenador - Río Manzanares",
+ turb:"Muy alta",ph:"6.5",clarity:"Muy baja",
+ color:"#98744b",height:76,detail:"grate",
+ desc:"Se retienen residuos gruesos y arenas arrastradas por el agua. Esta etapa protege los equipos y evita obstrucciones."
+},
+{
+ name:"Sedimentación primaria",
+ tank:"Tanque decantador",
+ turb:"Alta",ph:"6.6",clarity:"Baja",
+ color:"#92754d",height:69,detail:"",
+ desc:"El agua permanece en reposo para permitir que los sólidos suspendidos se depositen en el fondo por gravedad."
+},
+{
+ name:"Tratamiento biológico",
+ tank:"Reactor biológico",
+ turb:"Media-alta",ph:"6.8",clarity:"Media",
+ color:"#39846f",height:72,detail:"blades",
+ desc:"Los microorganismos degradan parte de la materia orgánica presente en el agua. Algunos sistemas suministran aire para favorecer su actividad."
+},
+{
+ name:"Clarificación secundaria",
+ tank:"Clarificador secundario",
+ turb:"Media-baja",ph:"7.0",clarity:"Media-alta",
+ color:"#318b9b",height:65,detail:"",
+ desc:"Se separan del agua los lodos biológicos generados durante el tratamiento."
+},
+{
+ name:"Filtración multicapa",
+ tank:"Filtro de arena y grava",
+ turb:"Baja",ph:"7.1",clarity:"Alta",
+ color:"#258da8",height:62,detail:"filter",
+ desc:"El agua pasa por materiales filtrantes que ayudan a retener partículas finas."
+},
+{
+ name:"Desinfección",
+ tank:"Cámara de desinfección",
+ turb:"Muy baja",ph:"7.2",clarity:"Alta",
+ color:"#26b9c4",height:59,detail:"uv",
+ desc:"Se aplica un proceso de desinfección, como cloración o radiación ultravioleta, para reducir microorganismos."
+}
 ];
 
-let current=0, timer=null, rotX=-10, rotY=-20;
-let dragging=false,lastX=0,lastY=0;
+let current = 0;
+let timer = null;
+let rotX = -10;
+let rotY = -20;
+let dragging = false;
+let lastX = 0;
+let lastY = 0;
 
 function showStage(){
- const s=stages[current];
- $("stageList").innerHTML=stages.map((x,i)=>
- `<button class="stage-btn ${i===current?"active":""}" data-stage="${i}">${i+1}. ${x.name}</button>`
+ const s = stages[current];
+
+ $("stageList").innerHTML = stages.map((x,i)=>
+  `<button class="stage-btn ${i===current?"active":""}" data-stage="${i}">
+  ${i+1}. ${x.name}</button>`
  ).join("");
- $("caption").textContent=s.tank;
- $("stageTitle").textContent=(current+1)+". "+s.name;
- $("description").textContent=s.desc;
- $("turbidity").textContent=s.turb;
- $("ph").textContent=s.ph;
- $("clarity").textContent=s.clarity;
- $("water").style.height=s.height+"%";
- $("water").style.background=`linear-gradient(${s.color},${s.color}bb)`;
- $("progressText").textContent=Math.round((current+1)/6*100)+"%";
- $("progressBar").style.width=(current+1)/6*100+"%";
- let d="";
- if(s.detail==="grate")d='<div class="grate"><i></i><i></i><i></i><i></i><i></i><i></i></div>';
- if(s.detail==="blades")d='<div class="blades"></div>';
- if(s.detail==="filter")d='<div class="filter"></div>';
- if(s.detail==="uv")d='<div class="uv"><i></i><i></i><i></i><i></i></div>';
- $("details").innerHTML=d;
- $("previous").disabled=current===0;
- $("next").disabled=current===5;
+
+ $("caption").textContent = s.tank;
+ $("stageTitle").textContent = (current+1)+". "+s.name;
+ $("description").textContent = s.desc;
+ $("turbidity").textContent = s.turb;
+ $("ph").textContent = s.ph;
+ $("clarity").textContent = s.clarity;
+
+ $("water").style.height = s.height+"%";
+ $("water").style.background = `linear-gradient(${s.color},${s.color}bb)`;
+
+ $("progressText").textContent = Math.round((current+1)/6*100)+"%";
+ $("progressBar").style.width = (current+1)/6*100+"%";
+
+ let detail = "";
+
+ if(s.detail==="grate"){
+  detail='<div class="grate"><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+ }
+ if(s.detail==="blades"){
+  detail='<div class="blades"></div>';
+ }
+ if(s.detail==="filter"){
+  detail='<div class="filter"></div>';
+ }
+ if(s.detail==="uv"){
+  detail='<div class="uv"><i></i><i></i><i></i><i></i></div>';
+ }
+
+ $("details").innerHTML = detail;
+ $("previous").disabled = current===0;
+ $("next").disabled = current===5;
 }
+
 function stopSimulation(){
- if(timer){clearInterval(timer);timer=null}
+ if(timer){
+  clearInterval(timer);
+  timer=null;
+ }
  $("play").textContent="▶ Simular";
 }
+
 $("stageList").addEventListener("click",e=>{
  const btn=e.target.closest("[data-stage]");
  if(!btn)return;
- stopSimulation();current=Number(btn.dataset.stage);showStage();
+ stopSimulation();
+ current=Number(btn.dataset.stage);
+ showStage();
 });
-$("previous").onclick=()=>{stopSimulation();current=Math.max(0,current-1);showStage()};
-$("next").onclick=()=>{stopSimulation();current=Math.min(5,current+1);showStage()};
-$("reset").onclick=()=>{stopSimulation();current=0;showStage()};
+
+$("previous").onclick=()=>{
+ stopSimulation();
+ current=Math.max(0,current-1);
+ showStage();
+};
+
+$("next").onclick=()=>{
+ stopSimulation();
+ current=Math.min(5,current+1);
+ showStage();
+};
+
+$("reset").onclick=()=>{
+ stopSimulation();
+ current=0;
+ showStage();
+};
+
 $("play").onclick=()=>{
- if(timer){stopSimulation();return}
+ if(timer){
+  stopSimulation();
+  return;
+ }
+
  if(current===5)current=0;
- showStage();$("play").textContent="Ⅱ Pausar";
+
+ showStage();
+ $("play").textContent="Ⅱ Pausar";
+
  timer=setInterval(()=>{
-  if(current<5){current++;showStage()}
-  else stopSimulation();
+  if(current<5){
+   current++;
+   showStage();
+  }else{
+   stopSimulation();
+  }
  },2000);
 };
 
 function rotateModel(){
  $("model").style.transform=`rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 }
-$("rotateLeft").onclick=()=>{rotY-=20;rotateModel()};
-$("rotateRight").onclick=()=>{rotY+=20;rotateModel()};
+
+$("rotateLeft").onclick=()=>{
+ rotY-=20;
+ rotateModel();
+};
+
+$("rotateRight").onclick=()=>{
+ rotY+=20;
+ rotateModel();
+};
+
 $("scene").addEventListener("pointerdown",e=>{
- dragging=true;lastX=e.clientX;lastY=e.clientY;
+ dragging=true;
+ lastX=e.clientX;
+ lastY=e.clientY;
  $("scene").setPointerCapture(e.pointerId);
 });
+
 $("scene").addEventListener("pointermove",e=>{
  if(!dragging)return;
- rotY+=(e.clientX-lastX)*.6;
- rotX=Math.max(-35,Math.min(25,rotX-(e.clientY-lastY)*.4));
- lastX=e.clientX;lastY=e.clientY;rotateModel();
+
+ rotY+=(e.clientX-lastX)*0.6;
+ rotX=Math.max(-35,Math.min(25,rotX-(e.clientY-lastY)*0.4));
+
+ lastX=e.clientX;
+ lastY=e.clientY;
+ rotateModel();
 });
+
 $("scene").addEventListener("pointerup",()=>dragging=false);
 $("scene").addEventListener("pointercancel",()=>dragging=false);
 
 function valid(ids){
  for(const id of ids){
-  if($(id).value.trim()===""||!Number.isFinite(N(id))){
+  const value=$(id).value.trim();
+
+  if(value===""||!Number.isFinite(Number(value))){
    alert("Introduce un número válido en el campo: "+id);
-   $(id).focus();return false;
+   $(id).focus();
+   return false;
   }
  }
  return true;
@@ -330,57 +523,45 @@ function valid(ids){
 function calcHydro(){
  const ids=["flow","e1","e2","length","width","depth"];
  if(!valid(ids))return;
- const q=N("flow"),v=N("length")*N("width")*N("depth"),dh=N("e2")-N("e1");
+
+ const q=N("flow");
+ const volume=N("length")*N("width")*N("depth");
+ const difference=N("e2")-N("e1");
+
+ if(q<0||N("length")<=0||N("width")<=0||N("depth")<=0){
+  alert("El caudal no puede ser negativo y las dimensiones deben ser mayores que cero.");
+  return;
+ }
+
  $("rFlow").textContent=fmt(q/1000,5)+" m³/s";
- $("rVolume").textContent=fmt(v)+" m³";
- $("rElevation").textContent=fmt(dh)+" m";
- $("eqHydro").innerHTML=`Q = ${fmt(q)} / 1000 = ${fmt(q/1000,5)} m³/s<br>V = ${fmt(N("length"))} × ${fmt(N("width"))} × ${fmt(N("depth"))} = ${fmt(v)} m³<br>ΔH = ${fmt(N("e2"))} − ${fmt(N("e1"))} = ${fmt(dh)} m`;
+ $("rVolume").textContent=fmt(volume)+" m³";
+ $("rElevation").textContent=fmt(difference)+" m";
+
+ $("eqHydro").innerHTML=
+ `Q = ${fmt(q)} / 1000 = ${fmt(q/1000,5)} m³/s<br>
+ V = ${fmt(N("length"))} × ${fmt(N("width"))} × ${fmt(N("depth"))} = ${fmt(volume)} m³<br>
+ ΔH = ${fmt(N("e2"))} − ${fmt(N("e1"))} = ${fmt(difference)} m`;
 }
 
 function calcEconomy(){
  const ids=["flow","tariff","fixed","days"];
  if(!valid(ids))return;
+
  const days=N("days");
- if(days<1||days>31){alert("Los días deben estar entre 1 y 31.");return}
+ if(days<1||days>31){
+  alert("Los días deben estar entre 1 y 31.");
+  return;
+ }
+
  const volume=N("flow")*86.4*days;
  const variable=volume*N("tariff");
  const total=variable+N("fixed");
+
+ if(N("flow")<0||N("tariff")<0||N("fixed")<0){
+  alert("Los valores no pueden ser negativos.");
+  return;
+ }
+
  $("rMonthly").textContent=fmt(volume)+" m³";
  $("rVariable").textContent=money(variable);
- $("rTotal").textContent=money(total);
- $("eqEconomy").innerHTML=`Volumen mensual = ${fmt(N("flow"))} × 86,4 × ${days} = ${fmt(volume)} m³<br>Costo variable = ${money(variable)}<br>Costo total = ${money(variable)} + ${money(N("fixed"))} = ${money(total)}`;
-}
-
-function calcChannel(){
- const ids=["base","slope","yd","target","gradient","manning"];
- if(!valid(ids))return;
- const b=N("base"),m=N("slope"),y=N("yd"),target=N("target"),S=N("gradient"),n=N("manning");
- if(b<=0||y<=0||m<0||target<=0||S<0||n<=0){alert("Revisa los valores: base, profundidad, área objetivo y Manning deben ser positivos.");return}
- const A=b*y+m*y*y;
- const P=b+2*y*Math.sqrt(1+m*m);
- const R=A/P;
- const Q=(1/n)*A*Math.pow(R,2/3)*Math.sqrt(S);
- const depth=m===0?target/b:(-b+Math.sqrt(b*b+4*m*target))/(2*m);
- $("rArea").textContent=fmt(A)+" m²";
- $("rDepth").textContent=fmt(depth)+" m";
- $("rManning").textContent=fmt(Q,4)+" m³/s";
- $("eqChannel").innerHTML=`A(y) = b × y + m × y² = ${fmt(b)} × ${fmt(y)} + ${fmt(m)} × ${fmt(y)}² = ${fmt(A)} m²<br>Profundidad para área objetivo = ${fmt(depth)} m<br>Perímetro mojado P = ${fmt(P)} m; Radio hidráulico R = ${fmt(R)} m<br>Caudal de Manning Q = ${fmt(Q,4)} m³/s`;
-}
-
-function calcPipe(){
- const ids=["pipeFlow","diameter","pipeLength","friction"];
- if(!valid(ids))return;
- const q=N("pipeFlow")/1000,D=N("diameter")/1000,L=N("pipeLength"),f=N("friction");
- if(D<=0||L<0||f<0){alert("Diámetro debe ser positivo; longitud y fricción no pueden ser negativas.");return}
- const A=Math.PI*D*D/4;
- const v=q/A;
- const loss=f*(L/D)*(v*v/(2*9.81));
- $("rVelocity").textContent=fmt(v)+" m/s";
- $("rLoss").textContent=fmt(loss)+" m";
- $("rPipeArea").textContent=fmt(A,6)+" m²";
- $("eqPipe").innerHTML=`Q = ${fmt(q,5)} m³/s<br>A = π × ${fmt(D,4)}² / 4 = ${fmt(A,6)} m²<br>v = Q / A = ${fmt(v)} m/s<br>hₗ = f × (L/D) × (v²/2g) = ${fmt(loss)} m`;
-}
-
-function drawChart(values){
- const canvas=$("chart"),ctx=canvas.getContext("2d");
- const w=canvas.width,h=canvas.height
+ $(
