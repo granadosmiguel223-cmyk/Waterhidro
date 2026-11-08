@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -86,7 +87,7 @@ p { line-height: 1.6; color: var(--text-muted); font-size: 13px; }
 }
 button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: none; }
 
-/* ENHANCED 3D VIEWING ENGINE */
+/* VISOR 3D */
 .viewer {
   height: 450px;
   position: relative;
@@ -136,7 +137,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   transition: transform 0.1s linear;
 }
 
-/* TANK GEOMETRY & SHADING */
+/* GEOMETRÍA DEL TANQUE */
 .tank {
   position: absolute;
   top: 35px; left: 0;
@@ -179,7 +180,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   border-radius: 4px;
 }
 
-/* PIPELINE PIPES */
 .pipe-in, .pipe-out {
   position: absolute;
   top: 105px; width: 75px; height: 14px;
@@ -191,7 +191,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
 .pipe-in { left: -65px; transform: translateZ(40px); }
 .pipe-out { left: 245px; transform: translateZ(40px); }
 
-/* WATER SIMULATION ENVIRONMENT */
+/* AGUA */
 .water {
   position: absolute;
   bottom: 0; width: 100%;
@@ -223,7 +223,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   100% { background-position: 200% 0; }
 }
 
-/* STAGE DYNAMICS & PARTICLES */
 .details { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
 .grate { position: absolute; inset: 12px 25px; display: flex; justify-content: space-around; }
 .grate i {
@@ -285,7 +284,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   100% { transform: translateY(-130px) scale(1.2); opacity: 0; }
 }
 
-/* LABELS & CONTROLS */
 .caption {
   position: absolute; top: 14px; left: 14px;
   background: rgba(6, 27, 43, 0.85);
@@ -392,12 +390,12 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
         </div>
 
         <div class="controls">
-          <button id="rotateLeft">↶ Girar Izq</button>
-          <button id="previous">← Anterior</button>
-          <button class="primary" id="play">▶ Simular</button>
-          <button id="next">Siguiente →</button>
-          <button id="reset">↺ Reiniciar</button>
-          <button id="rotateRight">Girar Der ↷</button>
+          <button id="rotateLeft" type="button">↶ Girar Izq</button>
+          <button id="previous" type="button">← Anterior</button>
+          <button class="primary" id="play" type="button">▶ Simular</button>
+          <button id="next" type="button">Siguiente →</button>
+          <button id="reset" type="button">↺ Reiniciar</button>
+          <button id="rotateRight" type="button">Girar Der ↷</button>
         </div>
       </div>
 
@@ -437,7 +435,7 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
       <label>Ancho (m)<input id="width" type="number" value="4.0" step="any"></label>
       <label>Profundidad (m)<input id="depth" type="number" value="2.2" step="any"></label>
     </div>
-    <button class="primary" id="calcHydro">Calcular variables hidráulicas</button>
+    <button class="primary" id="calcHydro" type="button">Calcular variables hidráulicas</button>
 
     <div class="results">
       <div class="result"><small>Caudal convertido</small><strong id="rFlow">0.00285 m³/s</strong></div>
@@ -459,7 +457,7 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
       <label>Cargo fijo de operación (COP)<input id="fixed" type="number" value="250000" step="any"></label>
       <label>Días de operación al mes<input id="days" type="number" value="30" min="1" max="31"></label>
     </div>
-    <button class="primary" id="calcEconomy">Calcular costo de impulsión</button>
+    <button class="primary" id="calcEconomy" type="button">Calcular costo de impulsión</button>
 
     <div class="results">
       <div class="result"><small>Volumen mensual procesado</small><strong id="rMonthly">7.394,40 m³</strong></div>
@@ -474,12 +472,12 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
 
   <section class="panel">
     <h3>3. Ecuación cuadrática: optimización de canal rectangular</h3>
-    <p>Optimización parabólica de la sección transversal de un canal con perímetro mojado restringido $P$: $A(y) = -2y^2 + Py$.</p>
+    <p>Optimización parabólica de la sección transversal de un canal con perímetro mojado restringido P: A(y) = -2y² + Py.</p>
     <div class="fields">
       <label>Perímetro disponible P (m)<input id="perim" type="number" value="3.2" step="any"></label>
       <label>Profundidad evaluada y (m)<input id="rectY" type="number" value="0.8" step="any"></label>
     </div>
-    <button class="primary" id="calcQuadratic">Calcular optimización cuadrática</button>
+    <button class="primary" id="calcQuadratic" type="button">Calcular optimización cuadrática</button>
 
     <div class="results">
       <div class="result"><small>Tirante óptimo (y = P/4)</small><strong id="rOptY">0,80 m</strong></div>
@@ -501,7 +499,7 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
       <label>Pendiente del canal S<input id="gradient" type="number" value="0.002" step="any"></label>
       <label>Coeficiente Manning n<input id="manning" type="number" value="0.013" step="any"></label>
     </div>
-    <button class="primary" id="calcChannel">Calcular caudal en canal</button>
+    <button class="primary" id="calcChannel" type="button">Calcular caudal en canal</button>
 
     <div class="results">
       <div class="result"><small>Área transversal</small><strong id="rArea">1,12 m²</strong></div>
@@ -519,5 +517,4 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
     <div class="fields">
       <label>Caudal (L/s)<input id="pipeFlow" type="number" value="2.85" step="any"></label>
       <label>Diámetro interno (mm)<input id="diameter" type="number" value="50" step="any"></label>
-      <label>Longitud conducción (m)<input id="pipeLength" type="number" value="100" step="any"></label>
-      
+      <label>Longitud conducción (m)<input id="pipeLength" type="number" value="100" step="any"></l
