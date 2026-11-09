@@ -86,7 +86,7 @@ p { line-height: 1.6; color: var(--text-muted); font-size: 13px; }
 }
 button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: none; }
 
-/* VISOR 3D */
+/* VISOR 3D HIGH-DEFINITION */
 .viewer {
   height: 450px;
   position: relative;
@@ -101,7 +101,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   top: 50%; left: 50%;
   width: 420px; height: 260px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(ellipse, rgba(34, 213, 230, 0.15) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(34, 213, 230, 0.18) 0%, transparent 70%);
   pointer-events: none;
 }
 .grid-floor {
@@ -136,19 +136,25 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   transition: transform 0.1s linear;
 }
 
-/* GEOMETRÍA DEL TANQUE */
+/* GEOMETRÍA Y REFLUEJO 3D DEL TANQUE */
 .tank {
   position: absolute;
   top: 35px; left: 0;
   width: 250px; height: 175px;
-  background: rgba(18, 48, 70, 0.65);
-  border: 4px solid rgba(160, 205, 225, 0.85);
+  background: rgba(18, 48, 70, 0.55);
+  border: 4px solid rgba(175, 220, 240, 0.9);
   border-radius: 8px;
   overflow: hidden;
   transform: translateZ(40px);
   box-shadow: inset 0 0 35px rgba(0,0,0,0.9), 0 25px 40px rgba(0,0,0,0.6);
   backdrop-filter: blur(2px);
 }
+.tank::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 40%, rgba(34,213,230,0.1) 100%);
+  pointer-events: none; z-index: 8;
+}
+
 .side {
   position: absolute;
   top: 35px; left: 250px;
@@ -190,7 +196,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
 .pipe-in { left: -65px; transform: translateZ(40px); }
 .pipe-out { left: 245px; transform: translateZ(40px); }
 
-/* AGUA */
+/* SISTEMA DINÁMICO DEL AGUA Y SUPERFICIE */
 .water {
   position: absolute;
   bottom: 0; width: 100%;
@@ -203,15 +209,16 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
   position: absolute;
   top: -6px; left: -20%;
   width: 140%; height: 14px;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.65);
   border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
   animation: waveMotion 2.2s ease-in-out infinite alternate;
 }
 .water-shimmer {
   position: absolute; inset: 0;
-  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.15) 45%, transparent 60%);
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.2) 45%, transparent 60%);
   background-size: 200% 100%;
-  animation: shimmer 4s infinite linear;
+  animation: shimmer 3.5s infinite linear;
 }
 @keyframes waveMotion {
   from { transform: translateX(-15px) scaleY(0.7); }
@@ -249,7 +256,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
 .blades::after { transform: rotate(90deg); }
 .foam {
   position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
-  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
   animation: pulseFoam 1.5s ease-in-out infinite alternate;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -271,10 +278,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: n
 }
 @keyframes uvGlow { from { opacity: 0.7; } to { opacity: 1; filter: drop-shadow(0 0 8px #d2b5ff); } }
 
-.bubbles { position: absolute; inset: 0; pointer-events: none; }
+.bubbles { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
 .bubble {
   position: absolute; bottom: 5px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   animation: bubbleRise 3s infinite linear;
 }
@@ -512,8 +519,4 @@ canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; ma
   </section>
 
   <section class="panel">
-    <h3>5. Flujo en tubería y pérdida de carga (Darcy-Weisbach)</h3>
-    <div class="fields">
-      <label>Caudal (L/s)<input id="pipeFlow" type="number" value="2.85" step="any"></label>
-      <label>Diámetro interno (mm)<input id="diameter" type="number" value="50" step="any"></label>
-      <label>Longitud conducción (m)<input id="pipeLength" type="number" value="100" step="any"></l
+    <h3>5. Flujo en tubería y pérdida de carga (Dar
