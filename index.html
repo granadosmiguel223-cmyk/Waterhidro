@@ -2,505 +2,201 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AquaSim 3D Pro - Santa Marta y Magdalena</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador Hidráulico 3D - Acueducto de Santa Marta</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <style>
-:root {
---bg-dark: #051322;
---panel-bg: #0c2136;
---accent-cyan: #22d5e6;
---accent-blue: #1480cd;
---text-main: #eaf8ff;
---text-muted: #8caec4;
---glass-border: rgba(36, 83, 115, 0.6);
-}
-{ box-sizing: border-box; margin: 0; padding: 0; }
-body {
-background: radial-gradient(ellipse at top, #123755 0%, #051322 70%);
-color: var(--text-main);
-font-family: 'Segoe UI', Arial, sans-serif;
-min-height: 100vh;
-}
-header {
-padding: 20px 5%;
-background: linear-gradient(180deg, #091c2e 0%, #061524 100%);
-border-bottom: 1px solid var(--glass-border);
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 12px;
-}
-header h1 { margin: 0; color: var(--accent-cyan); font-size: 22px; display: flex; align-items: center; gap: 8px; }
-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
-.location-badge {
-background: rgba(34, 213, 230, 0.1);
-border: 1px solid var(--accent-cyan);
-color: var(--accent-cyan);
-padding: 6px 14px;
-border-radius: 20px;
-font-size: 11px;
-font-weight: bold;
-}
-main { max-width: 1240px; margin: auto; padding: 22px 4% 50px; }
-h2 { color: var(--accent-cyan); font-size: 20px; margin-bottom: 10px; }
-h3 { font-size: 15px; color: #d5f2ff; margin-bottom: 12px; }
-p { line-height: 1.6; color: var(--text-muted); font-size: 13px; }
-.layout { display: grid; grid-template-columns: 240px 1fr; gap: 18px; margin-top: 15px; }
-.panel {
-background: linear-gradient(145deg, #0e273f 0%, #081a2b 100%);
-border: 1px solid var(--glass-border);
-border-radius: 14px;
-padding: 18px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-margin-bottom: 18px;
-}
-.stage-list { display: flex; flex-direction: column; gap: 8px; }
-.stage-btn, button {
-cursor: pointer;
-border: 1px solid #2a5270;
-background: #0a1f33;
-color: #fff;
-border-radius: 9px;
-padding: 11px 13px;
-font-size: 12px;
-transition: all 0.25s ease;
-font-family: inherit;
-touch-action: manipulation;
-}
-.stage-btn { text-align: left; line-height: 1.4; }
-.stage-btn:hover, button:hover {
-border-color: var(--accent-cyan);
-background: #123452;
-box-shadow: 0 0 12px rgba(34, 213, 230, 0.2);
-}
-.stage-btn.active, button.primary {
-background: linear-gradient(135deg, #087d9f 0%, #115379 100%);
-border-color: var(--accent-cyan);
-box-shadow: 0 0 16px rgba(34, 213, 230, 0.35);
-}
-button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; box-shadow: none; }
-/* VISOR 3D HIGH-DEFINITION */
-.viewer {
-height: 450px;
-position: relative;
-overflow: hidden;
-border: 1px solid #225679;
-border-radius: 16px;
-background: radial-gradient(circle at 50% 80%, #175479 0%, #061626 75%);
-box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
-}
-.viewer-hdr-glow {
-position: absolute;
-top: 50%; left: 50%;
-width: 420px; height: 260px;
-transform: translate(-50%, -50%);
-background: radial-gradient(ellipse, rgba(34, 213, 230, 0.18) 0%, transparent 70%);
-pointer-events: none;
-}
-.grid-floor {
-position: absolute;
-bottom: 20px; width: 100%; height: 180px;
-background-image: linear-gradient(rgba(34,213,230,0.08) 1px, transparent 1px),
-linear-gradient(90deg, rgba(34,213,230,0.08) 1px, transparent 1px);
-background-size: 30px 30px;
-transform: perspective(500px) rotateX(72deg);
-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-pointer-events: none;
-}
-.scene {
-height: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-perspective: 1000px;
-touch-action: none;
-cursor: grab;
-user-select: none;
-}
-.scene:active { cursor: grabbing; }
-.model {
-width: 280px;
-height: 220px;
-position: relative;
-transform-style: preserve-3d;
-transform: rotateX(-12deg) rotateY(-22deg);
-transition: transform 0.1s linear;
-}
-/* GEOMETRÍA Y REFLUEJO 3D DEL TANQUE */
-.tank {
-position: absolute;
-top: 35px; left: 0;
-width: 250px; height: 175px;
-background: rgba(18, 48, 70, 0.55);
-border: 4px solid rgba(175, 220, 240, 0.9);
-border-radius: 8px;
-overflow: hidden;
-transform: translateZ(40px);
-box-shadow: inset 0 0 35px rgba(0,0,0,0.9), 0 25px 40px rgba(0,0,0,0.6);
-backdrop-filter: blur(2px);
-}
-.tank::before {
-content: ""; position: absolute; inset: 0;
-background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 40%, rgba(34,213,230,0.1) 100%);
-pointer-events: none; z-index: 8;
-}
-.side {
-position: absolute;
-top: 35px; left: 250px;
-width: 80px; height: 175px;
-background: linear-gradient(90deg, #102d42 0%, #071724 100%);
-border: 4px solid #6b8d9e;
-border-left: none;
-border-radius: 0 8px 8px 0;
-transform: rotateY(90deg) translateZ(40px);
-transform-origin: left;
-box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-}
-.top {
-position: absolute;
-top: 0; left: 0;
-width: 250px; height: 80px;
-background: linear-gradient(135deg, rgba(190, 225, 240, 0.85) 0%, rgba(55, 95, 118, 0.9) 100%);
-border: 4px solid #bcd4e0;
-border-radius: 8px;
-transform: rotateX(90deg) translateZ(40px);
-transform-origin: bottom;
-box-shadow: inset 0 0 15px rgba(255,255,255,0.4);
-}
-.top::after {
-content: ""; position: absolute; inset: 12px;
-border: 2px solid rgba(10, 30, 45, 0.6);
-background: rgba(10, 25, 38, 0.4);
-border-radius: 4px;
-}
-.pipe-in, .pipe-out {
-position: absolute;
-top: 105px; width: 75px; height: 14px;
-background: linear-gradient(180deg, #b8d4e3 0%, #3e6478 100%);
-border: 1px solid #d8e8f0;
-border-radius: 6px;
-box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-}
-.pipe-in { left: -65px; transform: translateZ(40px); }
-.pipe-out { left: 245px; transform: translateZ(40px); }
-/* SISTEMA DINÁMICO DEL AGUA Y SUPERFICIE */
-.water {
-position: absolute;
-bottom: 0; width: 100%;
-height: 70%;
-background: linear-gradient(180deg, rgba(53, 212, 224, 0.85) 0%, rgba(8, 125, 165, 0.95) 100%);
-transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.8s ease;
-overflow: hidden;
-}
-.water-surface {
-position: absolute;
-top: -6px; left: -20%;
-width: 140%; height: 14px;
-background: rgba(255, 255, 255, 0.65);
-border-radius: 50%;
-box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
-animation: waveMotion 2.2s ease-in-out infinite alternate;
-}
-.water-shimmer {
-position: absolute; inset: 0;
-background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.2) 45%, transparent 60%);
-background-size: 200% 100%;
-animation: shimmer 3.5s infinite linear;
-}
-@keyframes waveMotion {
-from { transform: translateX(-15px) scaleY(0.7); }
-to { transform: translateX(18px) scaleY(1.3); }
-}
-@keyframes shimmer {
-0% { background-position: -200% 0; }
-100% { background-position: 200% 0; }
-}
-.details { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-.grate { position: absolute; inset: 12px 25px; display: flex; justify-content: space-around; }
-.grate i {
-width: 6px; height: 100%;
-background: linear-gradient(180deg, #e4eff3 0%, #608092 100%);
-border-radius: 3px;
-box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-}
-.blades-container {
-position: absolute; top: 35px; left: 85px;
-width: 80px; height: 80px;
-}
-.blades {
-width: 100%; height: 100%;
-border: 5px solid rgba(255, 255, 255, 0.9);
-border-radius: 50%;
-position: relative;
-animation: spin 2.5s linear infinite;
-box-shadow: 0 0 15px rgba(255,255,255,0.4);
-}
-.blades::before, .blades::after {
-content: ""; position: absolute; top: 0; left: 33px;
-width: 6px; height: 70px; background: #ffffff; border-radius: 3px;
-}
-.blades::after { transform: rotate(90deg); }
-.foam {
-position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
-border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-animation: pulseFoam 1.5s ease-in-out infinite alternate;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes pulseFoam { from { transform: scale(0.9); opacity: 0.5; } to { transform: scale(1.1); opacity: 0.9; } }
-.filter-bed {
-position: absolute; bottom: 0; width: 100%; height: 48%;
-background: repeating-linear-gradient(to bottom, #d6b47c 0 10px, #86aab2 10px 20px, #3c5d6e 20px 28px);
-border-top: 2px solid rgba(255,255,255,0.4);
-box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
-}
-.uv-array { display: flex; justify-content: space-around; padding: 15px 20px; }
-.uv-array i {
-width: 8px; height: 110px;
-background: #c3a6ff;
-border-radius: 4px;
-box-shadow: 0 0 18px #a87bff, 0 0 30px #8b4dff;
-animation: uvGlow 1.8s ease-in-out infinite alternate;
-}
-@keyframes uvGlow { from { opacity: 0.7; } to { opacity: 1; filter: drop-shadow(0 0 8px #d2b5ff); } }
-.bubbles { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
-.bubble {
-position: absolute; bottom: 5px;
-background: rgba(255, 255, 255, 0.7);
-border-radius: 50%;
-animation: bubbleRise 3s infinite linear;
-}
-@keyframes bubbleRise {
-0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
-100% { transform: translateY(-130px) scale(1.2); opacity: 0; }
-}
-.caption {
-position: absolute; top: 14px; left: 14px;
-background: rgba(6, 27, 43, 0.85);
-border: 1px solid var(--glass-border);
-padding: 8px 14px; border-radius: 8px;
-font-size: 12px; z-index: 10;
-backdrop-filter: blur(4px);
-box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-.caption span { color: var(--accent-cyan); font-weight: bold; }
-.controls {
-position: absolute; bottom: 14px; left: 0; right: 0;
-display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; z-index: 25;
-}
-.controls button { font-size: 11px; padding: 8px 12px; z-index: 30; }
-.info { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-.metric { background: #071b2b; padding: 12px; border-radius: 9px; border: 1px solid rgba(41, 74, 96, 0.6); }
-.metric small { display: block; color: var(--text-muted); font-size: 11px; }
-.metric strong { display: block; color: var(--accent-cyan); margin-top: 5px; font-size: 15px; }
-.progress { height: 8px; background: #233f54; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-.progress div { height: 100%; background: linear-gradient(90deg, #1480cd, #22d5e6); width: 16.6%; transition: width 0.4s ease; }
-.fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
-label { font-size: 12px; color: #b9d0df; }
-input {
-display: block; width: 100%; margin-top: 6px; padding: 10px;
-border: 1px solid #2a5270; background: #061725; color: var(--accent-cyan);
-border-radius: 7px; font-family: inherit; font-size: 13px; outline: none;
-}
-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 8px rgba(34,213,230,0.3); }
-.results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
-.result { background: #071b2b; border: 1px solid #244961; border-radius: 9px; padding: 12px; overflow-wrap: anywhere; }
-.result small { color: var(--text-muted); font-size: 11px; }
-.result strong { display: block; color: var(--accent-cyan); margin-top: 6px; font-size: 14px; }
-.equation { background: #061928; border-left: 3px solid var(--accent-cyan); border-radius: 6px; padding: 12px; margin-top: 12px; font-size: 12px; line-height: 1.7; color: #c4e2ef; overflow-wrap: anywhere; }
-canvas { width: 100%; height: 210px; background: #061726; border-radius: 9px; margin-top: 15px; border: 1px solid #1a3c54; }
-.note { font-size: 11px; color: #7f9eb4; margin-top: 10px; }
-@media(max-width: 800px) {
-.layout { grid-template-columns: 1fr; }
-.stage-list { display: grid; grid-template-columns: 1fr 1fr; }
-.fields { grid-template-columns: 1fr 1fr; }
-.info { grid-template-columns: 1fr; }
-}
-@media(max-width: 480px) {
-main { padding: 14px 3%; }
-.viewer { height: 380px; }
-.model { transform: scale(0.78) rotateX(-10deg) rotateY(-20deg); }
-.results { grid-template-columns: 1fr; }
-.stage-list { grid-template-columns: 1fr; }
-.fields { grid-template-columns: 1fr; }
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:#0b1220;color:#e2e8f0}
+header{padding:10px 18px;background:#0f172a;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+h1{margin:0;font-size:19px;color:#38bdf8}header small{color:#94a3b8;font-size:11px}
+.badge{background:#0c4a6e;border:1px solid #0369a1;color:#7dd3fc;font-size:11px;padding:4px 10px;border-radius:99px}
+main{display:grid;grid-template-columns:1fr 390px;gap:12px;padding:12px}
+@media(max-width:1000px){main{grid-template-columns:1fr}#stage{height:70vh!important}aside{max-height:none!important}}
+#stage{position:relative;height:calc(100vh - 90px);min-height:540px;border-radius:12px;overflow:hidden;border:1px solid #1e293b}
+#cv{position:absolute;inset:0}
+#lbls{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;transform:translate(-50%,calc(-100% - 7px));background:rgba(15,23,42,.88);border:1px solid #475569;border-left:3px solid #38bdf8;border-radius:6px;padding:2px 8px;font-size:11px;white-space:nowrap;pointer-events:none;color:#f1f5f9;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.lbl::after{content:'';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#475569;border-bottom:0}
+.lbl.dim{background:rgba(120,53,15,.9);border-color:#fbbf24;color:#fef3c7;font-family:ui-monospace,monospace}
+#tip{position:absolute;pointer-events:none;background:rgba(15,23,42,.95);border:1px solid #38bdf8;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.5;display:none;max-width:270px;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+#tip b{color:#7dd3fc}#tip em{color:#fbbf24;font-style:normal;font-size:11px}
+#cap{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(15,23,42,.92);border:1px solid #38bdf8;border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.5}
+#cap b.t{color:#38bdf8;display:block;margin-bottom:2px;font-size:14px}
+#tour{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap}
+#leg{position:absolute;top:10px;right:10px;background:rgba(15,23,42,.85);border:1px solid #334155;border-radius:8px;padding:6px 10px;font-size:11px;display:flex;gap:10px;flex-wrap:wrap;max-width:50%}
+#leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+button{background:#0369a1;color:#fff;border:0;border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;font-family:inherit}
+button:hover{filter:brightness(1.15)}button:focus-visible,input:focus-visible{outline:2px solid #fbbf24}
+button.on{background:#059669}button.off{background:#7f1d1d;border:1px solid #f43f5e}
+#tour button.act{background:#b45309}
+aside{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:14px;overflow-y:auto;max-height:calc(100vh - 90px)}
+h2{font-size:13px;color:#38bdf8;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid #334155}h2:first-child{margin-top:0}
+.row{display:flex;justify-content:space-between;font-size:12px;margin-top:9px}.row b{font-family:ui-monospace,monospace}
+input[type=range]{width:100%}
+input[type=number]{width:100%;background:#020617;border:1px solid #334155;border-radius:6px;color:#7dd3fc;padding:4px 6px;font-family:ui-monospace,monospace}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{background:#020617;border:1px solid #1e293b;border-radius:8px;padding:7px 9px}
+.card span{font-size:10px;color:#94a3b8;display:block}.card b{font-family:ui-monospace,monospace;font-size:14px;color:#7dd3fc}
+.eq{background:#020617;border-left:3px solid #38bdf8;padding:8px 10px;font-size:11.5px;font-family:ui-monospace,monospace;line-height:1.6;margin-bottom:8px}
+.bar{height:6px;background:#1e293b;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%}
+#nar{font-size:12px;line-height:1.5;padding-left:16px;margin:0;color:#cbd5e1}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <header>
-<div>
-<h1>💧 AquaSim 3D Pro — Santa Marta</h1>
-<p>Simulador de gestión e ingeniería hídrica (Río Manzanares / Bahía de Santa Marta)</p>
-</div>
-<div class="location-badge">📍 Sistema Hídrico Magdalena</div>
+ <div><h1>💧 Simulador Hidráulico 3D: Acueducto y Redes de Santa Marta</h1>
+ <small>Institución Universitaria de Santa Marta · Ingeniería del Agua y Desarrollo Sostenible · Álgebra y Geometría Analítica · 2026-II</small></div>
+ <span class="badge">Línea 2: Hidráulica de canales abiertos y redes de acueducto</span>
 </header>
 <main>
-<h2>Simulador de gestión y tratamiento hídrico</h2>
-<p>Explora interactivamente el tratamiento del agua, manipula variables hidráulicas en 3D y ejecuta modelos analíticos reales.</p>
-<div class="layout">
-<aside class="panel">
-<h3>Etapas del tratamiento</h3>
-<div class="stage-list" id="stageList"></div>
-</aside>
-<section>
-<div class="viewer">
-<div class="viewer-hdr-glow"></div>
-<div class="grid-floor"></div>
-<div class="caption">Tanque: <span id="caption">Desarenador - Río Manzanares</span></div>
-<div class="scene" id="scene">
-<div class="model" id="model">
-<div class="top"></div>
-<div class="side"></div>
-<div class="tank">
-<div class="water" id="water">
-<div class="water-surface"></div>
-<div class="water-shimmer"></div>
-</div>
-<div class="details" id="details"></div>
-<div class="bubbles" id="bubbles"></div>
-</div>
-<div class="pipe-in"></div>
-<div class="pipe-out"></div>
-</div>
-</div>
-<div class="controls">
-<button id="rotateLeft" type="button">↶ Girar Izq</button>
-<button id="previous" type="button">← Anterior</button>
-<button class="primary" id="play" type="button">▶ Simular</button>
-<button id="next" type="button">Siguiente →</button>
-<button id="reset" type="button">↺ Reiniciar</button>
-<button id="rotateRight" type="button">Girar Der ↷</button>
-</div>
-</div>
-<div class="info">
-<div class="panel">
-<h3 id="stageTitle">1. Captación y pretratamiento</h3>
-<p id="description"></p>
-<div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
-Progreso del proceso: <span id="progressText" style="color:var(--accent-cyan); font-weight:bold;">17%</span>
-</div>
-<div class="progress"><div id="progressBar"></div></div>
-</div>
-<div class="panel">
-<h3>Indicadores fisicoquímicos</h3>
-<div class="results" style="grid-template-columns: repeat(3, 1fr);">
-<div class="metric"><small>Turbidez</small><strong id="turbidity">Muy alta</strong></div>
-<div class="metric"><small>pH simulado</small><strong id="ph">6.5</strong></div>
-<div class="metric"><small>Claridad visual</small><strong id="clarity">Muy baja</strong></div>
-</div>
-<p class="note">Valores cualitativos orientados a la modelación académica del recurso hídrico.</p>
-</div>
-</div>
-</section>
-</div>
-<h2>📐 Panel de modelos y cálculos matemáticos</h2>
-<section class="panel">
-<h3>1. Cálculos hidráulicos y volumen del tanque de captación</h3>
-<div class="fields">
-<label>Caudal (L/s)<input id="flow" type="number" value="2.85" step="any"></label>
-<label>Cota inicial (m)<input id="e1" type="number" value="12.5" step="any"></label>
-<label>Cota final (m)<input id="e2" type="number" value="9.8" step="any"></label>
-<label>Largo (m)<input id="length" type="number" value="8.5" step="any"></label>
-<label>Ancho (m)<input id="width" type="number" value="4.0" step="any"></label>
-<label>Profundidad (m)<input id="depth" type="number" value="2.2" step="any"></label>
-</div>
-<button class="primary" id="calcHydro" type="button">Calcular variables hidráulicas</button>
-<div class="results">
-<div class="result"><small>Caudal convertido</small><strong id="rFlow">0.00285 m³/s</strong></div>
-<div class="result"><small>Volumen del tanque</small><strong id="rVolume">74.80 m³</strong></div>
-<div class="result"><small>Diferencia de cotas (ΔH)</small><strong id="rElevation">-2.70 m</strong></div>
-</div>
-<div class="equation" id="eqHydro">
-Q = Caudal (L/s) ÷ 1000
+ <section id="stage">
+  <div id="cv"></div><div id="lbls"></div><div id="tip"></div>
+  <div id="tour"><button id="bPlay">▶ Recorrido guiado</button><button id="bPrev" title="Paso anterior">◀</button><button id="bNext" title="Paso siguiente">▶</button><button id="bHome" title="Volver a la vista general">⟲ Vista general</button><button id="bRot" title="Girar la cámara automáticamente">🔄 Giro</button></div>
+  <div id="leg"><span><i style="background:#10b981"></i>Normal</span><span><i style="background:#f59e0b"></i>Alerta</span><span><i style="background:#f43f5e"></i>Crítico</span><span><i style="background:#7dd3fc"></i>Flujo de agua</span><span><i style="background:#fbbf24;border-radius:2px"></i>Cotas / parábola</span></div>
+  <div id="cap"><b class="t" id="capT"></b><span id="capB"></span></div>
+ </section>
+ <aside>
+  <h2>🎛️ Variables operativas</h2>
+  <div id="ctl"></div>
+  <div class="g2" style="margin-top:10px">
+   <div><label class="row" style="margin:0 0 3px"><span>Q1 Río Manzanares (L/s)</span></label><input type="number" id="q1" value="125.45" step="0.05" min="0"></div>
+   <div><label class="row" style="margin:0 0 3px"><span>Q2 Río Gaira (L/s)</span></label><input type="number" id="q2" value="98.30" step="0.05" min="0"></div>
+  </div>
+  <div class="row"><span>Válvulas por sector (clic aquí o sobre la válvula 3D)</span></div>
+  <div class="g2" id="vb" style="margin-top:5px"></div>
+  <button id="bEm" class="off" style="width:100%;margin-top:10px">🚨 Activar compuerta de emergencia (chorro parabólico)</button>
+  <h2>📊 Resultados en tiempo real</h2><div class="g2" id="mt"></div>
+  <h2>🏙️ Tanques sectoriales (balance dV/dt = Qentra − Qdemanda)</h2><div id="tk"></div>
+  <h2>📐 Ecuaciones del sistema</h2><div id="eq"></div>
+  <canvas id="plot" width="360" height="140" style="width:100%;background:#020617;border-radius:8px"></canvas>
+  <h2>🧭 ¿Qué está pasando?</h2><ul id="nar"></ul>
+ </aside>
+</main>
+<script>
+const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const sm=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
+const gs=(x,z,cx,cz,s,a)=>a*Math.exp(-((x-cx)**2+(z-cz)**2)/s);
+/* Cota topográfica (m) en cualquier punto: Sierra Nevada al norte, meseta urbana y bahía al sur */
+function Hf(x,z){let h=3.2-0.1*(z+20)+gs(x,z,-28,-62,900,34)+gs(x,z,38,-66,1100,28)+gs(x,z,0,-85,1500,40)+1.1*Math.sin(x*.13+1)*Math.cos(z*.11)+.8*Math.sin(x*.31)*Math.sin(z*.27);
+ const w=sm(46,26,Math.hypot(x-4,z-2));return h*(1-w)+w}
+const GR=Hf(0,0);
 
-V = Largo × Ancho × Profundidad
+/* ---------- Escena, cielo e iluminación ---------- */
+const cv=$('cv'),W=()=>cv.clientWidth,Ht=()=>cv.clientHeight,FOG=0xcfe3ef;
+const scene=new THREE.Scene();scene.background=new THREE.Color(FOG);scene.fog=new THREE.Fog(FOG,240,580);
+const camera=new THREE.PerspectiveCamera(45,W()/Ht(),.5,1400);camera.position.set(95,60,95);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W(),Ht());renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;cv.appendChild(renderer.domElement);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI*.47;controls.minDistance=10;controls.maxDistance=280;controls.target.set(0,5,-10);controls.autoRotateSpeed=.6;
+scene.add(new THREE.HemisphereLight(0xd6ecff,0x4f5f38,.85));
+const sun=new THREE.DirectionalLight(0xfff0d2,1.5);sun.position.set(70,100,45);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0004;sun.shadow.normalBias=.12;
+Object.assign(sun.shadow.camera,{left:-95,right:95,top:95,bottom:-95,near:10,far:320});scene.add(sun);
+/* Cúpula de cielo con degradado y disco solar */
+const SUN=sun.position.clone().normalize();
+const skyMat=gnd=>new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,
+ uniforms:{top:{value:new THREE.Color(0x1f6cb3)},mid:{value:new THREE.Color(0x88c2ea)},bot:{value:new THREE.Color(FOG)},gnd:{value:new THREE.Color(gnd)},sd:{value:SUN}},
+ vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:'uniform vec3 top,mid,bot,gnd,sd;varying vec3 vP;void main(){vec3 d=normalize(vP);float h=d.y;vec3 c=mix(bot,mid,smoothstep(0.,.22,h));c=mix(c,top,smoothstep(.22,.9,h));c=mix(gnd,c,smoothstep(-.15,0.,h));float s=max(dot(d,sd),0.);c+=vec3(1.,.93,.78)*(pow(s,900.)*3.+pow(s,14.)*.25);gl_FragColor=vec4(c,1.);}'});
+const sky=new THREE.Mesh(new THREE.SphereGeometry(650,32,16),skyMat(FOG));sky.renderOrder=-1;scene.add(sky);
 
-ΔH = Cota final − Cota inicial
-</div>
-</section>
-<section class="panel">
-<h3>2. Ecuación lineal: costo mensual de bombeo (Santa Marta)</h3>
-<p>Proyección del costo de bombeo e impulsión energética desde el Río Manzanares hacia tanques elevados.</p>
-<div class="fields">
-<label>Tarifa energía por m³ (COP)<input id="tariff" type="number" value="450" step="any"></label>
-<label>Cargo fijo de operación (COP)<input id="fixed" type="number" value="250000" step="any"></label>
-<label>Días de operación al mes<input id="days" type="number" value="30" min="1" max="31"></label>
-</div>
-<button class="primary" id="calcEconomy" type="button">Calcular costo de impulsión</button>
-<div class="results">
-<div class="result"><small>Volumen mensual procesado</small><strong id="rMonthly">7.394,40 m³</strong></div>
-<div class="result"><small>Costo variable energético</small><strong id="rVariable">$3.327.480</strong></div>
-<div class="result"><small>Costo total mensual</small><strong id="rTotal">$3.577.480</strong></div>
-</div>
-<div class="equation" id="eqEconomy">
-Volumen mensual = Caudal (L/s) × 86.4 × días
+/* ---------- Texturas procedurales ---------- */
+const cvs=n=>{const c=document.createElement('canvas');c.width=c.height=n;return [c,c.getContext('2d')]};
+const ctex=(c,rep)=>{const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep);t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t};
+function tex(base,n,rep){const [c,x]=cvs(128);x.fillStyle=base;x.fillRect(0,0,128,128);
+ for(let i=0;i<n;i++){x.fillStyle=rnd()>.5?`rgba(0,0,0,${rnd()*.14})`:`rgba(255,255,255,${rnd()*.14})`;x.fillRect(rnd()*128,rnd()*128,rnd()*8+1,rnd()*3+1)}return ctex(c,rep)}
+/* Mapa de normales "oleaje" periódico (suma de senos con frecuencias enteras → textura sin costuras) */
+function nrmTex(rep){const N=128,[c,x]=cvs(N),im=x.createImageData(N,N),Wv=[];
+ for(let i=0;i<7;i++)Wv.push([1+Math.floor(rnd()*5),Math.floor(rnd()*9)-4,rnd()*6.283,1/(1+i*.6)]);
+ const hf=(i,j)=>Wv.reduce((s,[a,b,p,A])=>s+A*Math.sin(6.2832*(a*i+b*j)/N+p),0);
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const nx=-(hf(i+1,j)-hf(i-1,j))*1.6,ny=-(hf(i,j+1)-hf(i,j-1))*1.6,l=Math.hypot(nx,ny,1),o=(j*N+i)*4;
+  im.data[o]=(nx/l*.5+.5)*255;im.data[o+1]=(ny/l*.5+.5)*255;im.data[o+2]=(1/l*.5+.5)*255;im.data[o+3]=255}
+ x.putImageData(im,0,0);return ctex(c,rep)}
+function winTex(){const [c,x]=cvs(64);x.fillStyle='#fff';x.fillRect(0,0,64,64);
+ for(let i=0;i<4;i++)for(let j=0;j<4;j++){x.fillStyle=rnd()<.15?'#e9d9a6':'#6f8799';x.fillRect(5+i*15,6+j*15,9,8)}const t=new THREE.CanvasTexture(c);return t}
+const dotTex=(()=>{const [c,x]=cvs(64),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.45,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+const concrete=tex('#a9adb0',1400,3),waterTex=tex('#2f8fd0',500,1);waterTex.repeat.set(4,1);
+const nSea=nrmTex(40),nPool=nrmTex(2),nFlow=nrmTex(1),nRiv=nrmTex(1);nFlow.repeat.set(6,2);
+const mConc=new THREE.MeshStandardMaterial({map:concrete,roughness:.9,side:THREE.DoubleSide,envMapIntensity:.5});
+const mSteel=new THREE.MeshStandardMaterial({color:0x475569,metalness:.8,roughness:.3});
+const V2=(a,b)=>new THREE.Vector2(a,b);
+const mWater=()=>new THREE.MeshStandardMaterial({color:0x2a86c6,normalMap:nPool,normalScale:V2(.45,.45),transparent:true,opacity:.88,roughness:.05,metalness:.15});
+const mesh=(g,m,x=0,y=0,z=0,sh=true)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=sh;return o};
+const pick=[];const pk=(o,d)=>{o.userData=d;pick.push(o);return o};
 
-Costo total = Volumen mensual × Tarifa + Cargo fijo
-</div>
-</section>
-<section class="panel">
-<h3>3. Ecuación cuadrática: optimización de canal rectangular</h3>
-<p>Optimización parabólica de la sección transversal de un canal con perímetro mojado restringido P: A(y) = -2y² + Py.</p>
-<div class="fields">
-<label>Perímetro disponible P (m)<input id="perim" type="number" value="3.2" step="any"></label>
-<label>Profundidad evaluada y (m)<input id="rectY" type="number" value="0.8" step="any"></label>
-</div>
-<button class="primary" id="calcQuadratic" type="button">Calcular optimización cuadrática</button>
-<div class="results">
-<div class="result"><small>Tirante óptimo (y = P/4)</small><strong id="rOptY">0,80 m</strong></div>
-<div class="result"><small>Área máxima alcanzable</small><strong id="rMaxA">1,28 m²</strong></div>
-<div class="result"><small>Área cuadrática evaluada</small><strong id="rEvalA">1,28 m²</strong></div>
-</div>
-<div class="equation" id="eqQuadratic">
-A(y) = (P − 2y) × y = −2y² + Py
+/* ---------- Terreno: color por cota + pendiente + suelo urbano ---------- */
+const tg=new THREE.PlaneGeometry(260,260,160,160);tg.rotateX(-Math.PI/2);
+{const P=tg.attributes.position;for(let i=0;i<P.count;i++)P.setY(i,Hf(P.getX(i),P.getZ(i)));tg.computeVertexNormals();
+ const N=tg.attributes.normal,col=new Float32Array(P.count*3),C=new THREE.Color(),C2=new THREE.Color(),RK=new THREE.Color(0x7a7062),UR=new THREE.Color(0xb3a78c);
+ const ST=[[-4,0x2b7790],[-.3,0x8fcfc2],[.9,0xdcc996],[1.8,0x7ea64c],[6,0x5a8a3a],[13,0x3f6a32],[20,0x56603f],[27,0x6c6757],[36,0x8a8478],[41,0xb9b6b0],[44,0xf4f7fa]];
+ for(let i=0;i<P.count;i++){const x=P.getX(i),z=P.getZ(i),h=P.getY(i);let k=1;while(k<ST.length-1&&h>ST[k][0])k++;
+  C.setHex(ST[k-1][1]).lerp(C2.setHex(ST[k][1]),clamp((h-ST[k-1][0])/(ST[k][0]-ST[k-1][0]),0,1));
+  if(h>2&&h<38)C.lerp(RK,sm(.22,.5,1-N.getY(i))*.85);
+  if(h>.9&&z>4&&z<38&&x>-52&&x<46)C.lerp(UR,.38*sm(46,30,Math.hypot(x,z-20)));
+  const n=.94+.06*Math.sin(x*1.7)*Math.cos(z*2.3)+.04*Math.sin(x*.4+z*.5);col.set([C.r*n,C.g*n,C.b*n],i*3)}
+ tg.setAttribute('color',new THREE.BufferAttribute(col,3))}
+const terrain=new THREE.Mesh(tg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,envMapIntensity:.4}));terrain.receiveShadow=true;scene.add(terrain);
+/* Bahía (mar con oleaje, reflejos y agua somera turquesa en la orilla) */
+const sg2=new THREE.PlaneGeometry(700,700,70,70);sg2.rotateX(-Math.PI/2);
+const sea=new THREE.Mesh(sg2,new THREE.MeshStandardMaterial({color:0x14649c,normalMap:nSea,normalScale:V2(.35,.35),transparent:true,opacity:.84,roughness:.1,metalness:.25}));sea.receiveShadow=true;scene.add(sea);
 
-Derivada f'(y) = −4y + P = 0 ⟹ y_óptimo = P / 4
-</div>
-</section>
-<section class="panel">
-<h3>4. Geometría de canal trapezoidal y ecuación de Manning</h3>
-<div class="fields">
-<label>Base inferior b (m)<input id="trapBase" type="number" value="0.6" step="any"></label>
-<label>Pendiente lateral m<input id="trapSlope" type="number" value="1" step="any"></label>
-<label>Profundidad y (m)<input id="trapY" type="number" value="0.8" step="any"></label>
-<label>Pendiente del canal S<input id="gradient" type="number" value="0.002" step="any"></label>
-<label>Coeficiente Manning n<input id="manning" type="number" value="0.013" step="any"></label>
-</div>
-<button class="primary" id="calcChannel" type="button">Calcular caudal en canal</button>
-<div class="results">
-<div class="result"><small>Área transversal</small><strong id="rArea">1,12 m²</strong></div>
-<div class="result"><small>Radio hidráulico (R)</small><strong id="rRadius">— m</strong></div>
-<div class="result"><small>Caudal Manning (Q)</small><strong id="rManning">— m³/s</strong></div>
-</div>
-<div class="equation" id="eqChannel">
-A = by + my² ; P = b + 2y√(1 + m²) ; R = A / P
+/* ---------- Vegetación ---------- */
+const M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),EU=new THREE.Euler(),S3=new THREE.Vector3(),P3=new THREE.Vector3(),TC=new THREE.Color();
+const NT=420,mLeaf=new THREE.MeshStandardMaterial({roughness:.95,flatShading:true,envMapIntensity:.4});
+const crowns=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1.35,0),mLeaf,NT),cones=new THREE.InstancedMesh(new THREE.ConeGeometry(1,3.4,7),mLeaf,NT),
+ trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.13,.22,1.7,5),new THREE.MeshStandardMaterial({color:0x5b4632,roughness:1}),NT);
+let nc=0,nk=0,nt=0;
+for(let i=0;i<6000&&nt<NT;i++){const x=rnd()*220-110,z=rnd()*150-110,h=Hf(x,z);if(h<1.5||h>19||Math.hypot(x-4,z-2)<36)continue;
+ const s=.75+rnd()*.7;M4.compose(P3.set(x,h+.8*s,z),Q.identity(),S3.set(s,s,s));trunks.setMatrixAt(nt++,M4);TC.setHSL(.24+rnd()*.09,.42+rnd()*.2,.2+rnd()*.1);
+ Q.setFromEuler(EU.set(0,rnd()*6.28,0));
+ if(h>9&&rnd()<.6){M4.compose(P3.set(x,h+1.4*s+1.7*s,z),Q,S3.set(s,s*(.9+rnd()*.5),s));cones.setMatrixAt(nk,M4);cones.setColorAt(nk++,TC)}
+ else{M4.compose(P3.set(x,h+1.5*s+.9*s,z),Q,S3.set(s*(1+rnd()*.35),s*.85,s*(1+rnd()*.35)));crowns.setMatrixAt(nc,M4);crowns.setColorAt(nc++,TC)}}
+crowns.count=nc;cones.count=nk;trunks.count=nt;[crowns,cones,trunks].forEach(o=>{o.castShadow=o.receiveShadow=true;scene.add(o)});
+/* Palmeras en la franja costera */
+const NP=60,pTr=new THREE.InstancedMesh(new THREE.CylinderGeometry(.1,.17,4.2,5),new THREE.MeshStandardMaterial({color:0x8a7356,roughness:1}),NP),
+ pFr=new THREE.InstancedMesh(new THREE.ConeGeometry(1.9,.7,7,1,true),new THREE.MeshStandardMaterial({color:0x4f8a35,roughness:.9,side:THREE.DoubleSide,flatShading:true}),NP);
+let np=0;for(let i=0;i<4000&&np<NP;i++){const x=rnd()*120-62,z=rnd()*40+24,h=Hf(x,z);if(h<.45||h>2.3)continue;
+ const s=.8+rnd()*.5,tl=(rnd()-.5)*.25;Q.setFromEuler(EU.set(tl,0,tl));M4.compose(P3.set(x,h+2.1*s,z),Q,S3.set(s,s,s));pTr.setMatrixAt(np,M4);
+ Q.setFromEuler(EU.set(Math.PI+tl,rnd()*6,tl));M4.compose(P3.set(x+tl*-4*s,h+4.2*s,z+tl*4*s),Q,S3.set(s,s,s));pFr.setMatrixAt(np++,M4)}
+pTr.count=pFr.count=np;[pTr,pFr].forEach(o=>{o.castShadow=true;scene.add(o)});
 
-Q = (1/n) × A × R^(2/3) × S^(1/2)
-</div>
-</section>
-<section class="panel">
-<h3>5. Flujo en tubería y pérdida de carga (Darcy-Weisbach)</h3>
-<div class="fields">
-<label>Caudal (L/s)<input id="pipeFlow" type="number" value="2.85" step="any"></label>
-<label>Diámetro interno (mm)<input id="diameter" type="number" value="50" step="any"></label>
-<label>Longitud conducción (m)<input id="pipeLength" type="number" value="100" step="any"></label>
-<label>Factor de fricción f<input id="friction" type="number" value="0.025" step="any"></label>
-</div>
-<button class="primary" id="calcPipe" type="button">Calcular pérdida por fricción</button>
-<div class="results">
-<div class="result"><small>Velocidad de flujo (v)</small><strong id="rVelocity">— m/s</strong></div>
-<div class="result"><small>Pérdida de carga (hL)</small><strong id="rLoss">— m</strong></div>
-<div class="result"><small>Área transversal tubería</small><strong id="rPipeArea">— m²</strong></div>
-</div>
-<div class="equation" id="eqPipe">
-A = π × D² / 4 ; v = Q / A
+/* ---------- Ciudad ---------- */
+const SEC=[{id:'centro',n:'Centro / Norte',x:-20,z:20,dem:52.30},{id:'pescaito',n:'Pescaíto / Bastidas',x:-5,z:28,dem:38.75},{id:'mamatoco',n:'Mamatoco / Curval',x:18,z:15,dem:41.20},{id:'gaira',n:'Gaira / Rodadero',x:34,z:-6,dem:47.85}];
+const pal=[0xf2e2c4,0xe8c9a0,0xd9e4ec,0xf5c6aa,0xe6e6d8,0xb7d3c5],NB=130;
+const bl=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({map:winTex(),roughness:.8,envMapIntensity:.6}),NB),
+ rf=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({roughness:.85}),NB);
+let nb=0;for(let i=0;i<4000&&nb<NB;i++){const x=rnd()*90-48,z=rnd()*28+6,h=Hf(x,z);if(h<.5||Math.hypot(x,z)<18||SEC.some(s=>Math.hypot(x-s.x,z-s.z)<8)||(x<-8&&x>-23&&z<13))continue;
+ const w=2+rnd()*3,d=2+rnd()*3,hh=rnd()<.1&&Math.hypot(x,z)>30?7+rnd()*5:2+rnd()*5;M4.compose(P3.set(x,h+hh/2-.2,z),Q.identity(),S3.set(w,hh,d));bl.setMatrixAt(nb,M4);bl.setColorAt(nb,TC.setHex(pal[nb%6]));
+ M4.compose(P3.set(x,h+hh-.05,z),Q,S3.set(w+.35,.32,d+.35));rf.setMatrixAt(nb,M4);rf.setColorAt(nb++,TC.setHex(rnd()<.55?0xb5553c:0x8f9499))}
+bl.count=rf.count=nb;[bl,rf].forEach(o=>{o.castShadow=o.receiveShadow=true;scene.add(o)});
 
-hL = f × (L/D) × (v² / 2g) [g = 9,81 m/s²]
-</div>
-</section>
-<section class="panel">
-<h3>6. Simulación dinámica del nivel del tanque</h3>
-<div class="fields">
-<label>Caudal entrada (L/s)<input id="inflow" type="number" value="3.0" step="any"></label>
-<label>Caudal salida (L/s)<input id="outflow" type="number" value="2.0" step="any"></label>
-<label>Área del tanque (m²)<input id="tankArea" type="number" value="20.0" s
+/* ---------- Nubes ---------- */
+const clouds=[],mCloud=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.93,flatShading:true,roughness:1});
+for(let i=0;i<9;i++){const g=new THREE.Group();for(let j=0;j<5;j++){const r=4+rnd()*5,o=new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),mCloud);o.position.set(j*5-10+rnd()*3,rnd()*2,rnd()*6-3);o.scale.y=.6;g.add(o)}
+ g.position.set(rnd()*440-220,78+rnd()*25,rnd()*260-200);g.userData.v=1.2+rnd()*1.5;clouds.push(g);scene.add(g)}
+
+/* ---------- Planta y embalse (r = 6.25 m) ---------- */
+const RR=6.25;
+const resW=pk(mesh(new THREE.CylinderGeometry(RR-.15,RR-.15,1,48),mWater(),0,GR+1,0,false),{kind:'res'});scene.add(resW);
+scene.add(pk(mesh(new THREE.CylinderGeometry(RR,RR,6.2,48,1,true),mConc,0,GR+3.1,0),{kind:'res'}));
+scene.add(mesh(new THREE.CylinderGeometry(RR+.2,RR+.2,.3,48),mConc,0,GR+.15,0));
+{const r=mesh(new THREE.TorusGeometry(RR+.05,.2,8,48),mConc,0,GR+6.2,0);r.rotation.x=Math.PI/2;scene.add(r)}
+/* Regla limnimétrica (escala de nivel) y marcador del nivel h */
+const gA=Math.PI/4,gx=Math.cos(gA)*(RR+.25),gz=Math.sin(gA)*(RR+.25);
+{const b=mesh(new THREE.BoxGeometry(.18,6,.5),new THREE.MeshStandardMaterial({color:0xf8fafc}),gx,GR+3.3,gz);b.rotation.y=-gA;scene.add(b);
+ for(let i=0;i<=6;i++){const t=mesh(new THREE.BoxGeometry(.24,.06,i%2?.35:.6),new THREE.MeshBasicMaterial({color:0x0f172a}),gx,GR+.3+i,gz);t.rotation.y=-gA;scene.add(t)}}
+const lvl=mesh(new THREE.BoxGeometry(.32,.16,.9),new THREE.MeshBasicMaterial({color:0xfbbf24}),gx,GR+3,gz,false);lvl.rotation.y=-gA;scene.add(lvl);
+const pump=pk(mesh(new THREE.BoxGeometry(11,4.5,7),new THREE.MeshStandardMaterial({color:0xe9e4d6,roughness:.8}),-15,GR+2.25,7),{kind:'pump'});scene.add(pump);
+scene.add(mesh(new THREE.BoxGeometry(12,.5,8),new THREE.MeshStandardMaterial({color:0x9a3b2e,roughness:.7}),-15,GR+4.75,7));
+for(let i=0;i<4;i++)scene.add(mesh(new THREE.BoxGeometry(1.4,1.6,.1),new THREE.MeshStandardMaterial({color:0x5f7a8c,metalness:.4,roughness:.3}),-19.5+i*3,GR+2.8,10.55,false));
+scene.add(mesh(new THREE.BoxGeometry(2,3,.1),mSteel,-15,GR+1.5,10.55,false));
+{const c=new THREE.CatmullRomCurve3([new THREE.Vector3(-RR*.85,GR+1.2,RR*.5),new THREE.Vector3(-7.5,GR+1.2,5),new THREE.Vector3(-9.5,GR+1.2,6)]);scene.add(mesh(new THREE.TubeGeometry(c,16,.35,10),mSteel))}
+for(let i=0;i<3;i++){scene.add(mesh(new THREE.BoxGeometry(6,1.2,4.2),mConc,-14+i*7.2,GR+.6,-9));scene.add(mesh(new THREE.BoxGeometry(5.3,.2,3.6),mWater(),-14+i*7.2,GR+1.15,-9,false))}
+const gate=mesh(new THREE.BoxGeometry(.6,1.2,1.4),new THREE.MeshStandardMaterial({color:0x334155,metalness:.6,roughness:.4}),RR,GR+2,0);scene.add(gate);
+
+/* ---------- Canal rectangular (zona de la cuadrática) con cotas b e y ---------- */
+const ch=new THREE.Group();ch.position.set(17,GR,-14);scene.add(ch);
+ch.add(mesh(new THREE.BoxGeometry(22,.3,15),
